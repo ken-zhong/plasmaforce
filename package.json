@@ -1,0 +1,11 @@
+{
+  "name": "plasma-force",
+  "version": "1.0.0",
+  "description": "A space shooter game built with JavaScript and HTML5",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
