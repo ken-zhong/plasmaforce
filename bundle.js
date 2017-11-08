@@ -151,6 +151,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _util = __webpack_require__(4);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Player = function () {
@@ -159,14 +161,18 @@ var Player = function () {
 
     this.speedX = 0;
     this.speedY = 0;
-    this.posX = 200;
-    this.posY = 200;
+    this.posX = _util.canvasWidth / 2;
+    this.posY = _util.canvasHeight / 2;
+    this.playerBullets = [];
     this.playerController();
   }
 
   _createClass(Player, [{
     key: 'fireBullet',
-    value: function fireBullet() {}
+    value: function fireBullet() {
+      var bulletData = {};
+      var newBullet = new Bullet(bulletData);
+    }
   }, {
     key: 'move',
     value: function move() {
@@ -176,14 +182,12 @@ var Player = function () {
       if (this.posY + this.speedY >= 10 && this.posY + this.speedY <= 670) {
         this.posY += this.speedY;
       }
-      // this.speedX = 0
-      // this.speedY = 0
     }
   }, {
     key: 'render',
     value: function render(ctx) {
       this.move();
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = 'blue';
       ctx.fillRect(this.posX, this.posY, 20, 20);
     }
   }, {
@@ -205,7 +209,11 @@ var Player = function () {
           case 40:
             _this.speedY = 5;
             break;
+          case 32:
+
+            break;
           default:
+            console.log(e.keyCode);
             break;
         }
       });
@@ -234,6 +242,20 @@ var Player = function () {
 }();
 
 exports.default = Player;
+
+/***/ }),
+/* 3 */,
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var canvasHeight = exports.canvasHeight = 700;
+var canvasWidth = exports.canvasWidth = 400;
 
 /***/ })
 /******/ ]);
