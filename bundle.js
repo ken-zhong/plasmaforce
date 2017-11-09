@@ -103,6 +103,12 @@ var _background = __webpack_require__(7);
 
 var _background2 = _interopRequireDefault(_background);
 
+var _enemy_ships = __webpack_require__(9);
+
+var Enemies = _interopRequireWildcard(_enemy_ships);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -122,6 +128,7 @@ var Game = function () {
     this.showGameOverScreen = false;
     this.bullets = [];
     this.enemies = [];
+    this.enemies.push(new Enemies.GruntShip());
   }
 
   _createClass(Game, [{
@@ -137,11 +144,14 @@ var Game = function () {
       this.clearCanvas();
       this.bg.render(this.bgContext);
       this.player.render(this.canvasContext);
-      this.bullets = this.player.playerBullets;
-      this.bullets.forEach(function (bullet) {
+      // this.bullets = this.player.playerBullets
+      this.player.playerBullets.forEach(function (bullet) {
         bullet.render(_this.canvasContext);
       });
-      requestAnimationFrame(this.render.bind(this));
+      this.enemies.forEach(function (ship) {
+        ship.render(_this.canvasContext);
+      });
+      window.requestAnimationFrame(this.render.bind(this));
     }
   }, {
     key: 'clearCanvas',
@@ -288,7 +298,10 @@ var Player = function (_MovingObject) {
   }, {
     key: 'render',
     value: function render(ctx) {
-      this.deleteBullets();
+      // optimization for speed?, uncomment this if needed
+      if (this.bulletCooldown === 0) {
+        this.deleteBullets();
+      }
       this.calculateInertia();
       this.move();
       // ctx.fillStyle = 'grey'
@@ -641,7 +654,8 @@ var ImageableSingleton = function ImageableSingleton() {
     this.beams.src = './assets/beams.png';
 
     // enemy ships
-
+    this.enemyGrunt = new Image();
+    this.enemyGrunt.src = './assets/enemy_1grunt.png';
 
     // player ship sprite: 420 x 85, 4 parts, left dmg normal right
     this.playerShip = new Image();
@@ -656,6 +670,110 @@ var ImageableSingleton = function ImageableSingleton() {
 };
 
 exports.default = ImageableSingleton;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.GruntShip = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _moving_object = __webpack_require__(6);
+
+var _moving_object2 = _interopRequireDefault(_moving_object);
+
+var _bullet = __webpack_require__(5);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// basic shared ship code can go in here
+var BaseShip = function (_MovingObject) {
+  _inherits(BaseShip, _MovingObject);
+
+  function BaseShip(props) {
+    _classCallCheck(this, BaseShip);
+
+    var _this = _possibleConstructorReturn(this, (BaseShip.__proto__ || Object.getPrototypeOf(BaseShip)).call(this, props));
+
+    _this.bullets = [];
+    return _this;
+  }
+
+  _createClass(BaseShip, [{
+    key: 'deleteBullets',
+    value: function deleteBullets() {
+      this.bullets = this.bullets.filter(function (bul) {
+        return !bul.cleanup;
+      });
+    }
+  }]);
+
+  return BaseShip;
+}(_moving_object2.default);
+
+// lvl1, weakest enemy ship
+
+
+var GruntShip = exports.GruntShip = function (_BaseShip) {
+  _inherits(GruntShip, _BaseShip);
+
+  function GruntShip(props) {
+    _classCallCheck(this, GruntShip);
+
+    var _this2 = _possibleConstructorReturn(this, (GruntShip.__proto__ || Object.getPrototypeOf(GruntShip)).call(this, props));
+
+    _this2.sprite = _this2.images.enemyGrunt;
+    _this2.tickCount = 0;
+    _this2.shipW = 32;
+    _this2.shipH = 76;
+    return _this2;
+  }
+
+  _createClass(GruntShip, [{
+    key: 'move',
+    value: function move() {}
+  }, {
+    key: 'fireBullet',
+    value: function fireBullet() {}
+  }, {
+    key: 'render',
+    value: function render(ctx) {
+      if (this.tickCount === 40) {
+        this.fireBullet();
+      }
+      this.move();
+      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()));
+    }
+  }, {
+    key: 'getSprite',
+    value: function getSprite() {
+      if (this.tickCount >= 40) {
+        this.tickCount = 0;
+      }
+      var sprites = [[this.sprite, 0, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH], [this.sprite, 16, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH], [this.sprite, 32, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH], [this.sprite, 48, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH]];
+      var result = sprites[Math.floor(this.tickCount / 10)];
+      this.tickCount++;
+      return result;
+    }
+  }]);
+
+  return GruntShip;
+}(BaseShip);
 
 /***/ })
 /******/ ]);

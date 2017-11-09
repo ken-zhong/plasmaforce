@@ -1,3 +1,7 @@
+body {
+  background-color: black;
+}
+
 .canvas-container {
   position: relative;
   margin: 0 auto;
@@ -5,7 +9,6 @@
 }
 
 canvas {
-  border: 10px solid red;
   position: absolute;
   top: 0;
   left: 0;
