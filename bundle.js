@@ -643,7 +643,7 @@ var ImageableSingleton = function ImageableSingleton() {
 
     // scrolling background
     this.backgroundImg = new Image();
-    this.backgroundImg.src = './assets/background1.png';
+    this.backgroundImg.src = './assets/background1.jpg';
 
     // bullets and effects
     this.laserRed = new Image();
