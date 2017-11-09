@@ -211,9 +211,8 @@ var Player = function (_MovingObject) {
     _this.playerBullets = [];
     _this.HP = 5;
     _this.playerController();
-    _this.sprite = _this.images.playerShip;
-    _this.shipW = 50;
-    _this.shipH = 40;
+    _this.shipW = 30;
+    _this.shipH = 46;
     return _this;
   }
 
@@ -223,7 +222,7 @@ var Player = function (_MovingObject) {
       var bulletData = {
         speedX: [-1, 0, 1][Math.floor(Math.random() * 3)],
         speedY: -10,
-        posX: this.posX + Math.floor(this.shipW / 2) - 5,
+        posX: this.posX + Math.floor(this.shipW / 2) - 10,
         posY: this.posY - 20
       };
       var newBullet = new _bullet.PlayerBulletBasic(bulletData);
@@ -301,17 +300,18 @@ var Player = function (_MovingObject) {
   }, {
     key: 'getSprite',
     value: function getSprite() {
-      var sprite = [this.sprite];
-      var normalShip = [0, 0, 107, 85];
-      var leftShip = [317, 0, 100, 85];
-      var rightShip = [218, 0, 101, 85];
-      var pos = [this.posX, this.posY, this.shipW, this.shipH];
+      var frame = [0, 1][Math.floor(Math.random() * 2)];
+
+      var normalSprite = [[this.images.playerShip, 0, 0, 32, 44, this.posX, this.posY, this.shipW, this.shipH], [this.images.playerShip, 32, 0, 32, 44, this.posX, this.posY, this.shipW, this.shipH]];
+      var leftSprite = [[this.images.playerShipL, 0, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH], [this.images.playerShipL, 29, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH]];
+      var rightSprite = [[this.images.playerShipR, 0, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH], [this.images.playerShipR, 29, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH]];
+
       if (this.speedX === 0) {
-        return sprite.concat(normalShip, pos);
+        return normalSprite[frame];
       } else if (this.speedX < 0) {
-        return sprite.concat(rightShip, pos);
+        return leftSprite[frame];
       } else if (this.speedX > 0) {
-        return sprite.concat(leftShip, pos);
+        return rightSprite[frame];
       }
     }
 
@@ -453,7 +453,7 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
 
     var _this2 = _possibleConstructorReturn(this, (PlayerBulletBasic.__proto__ || Object.getPrototypeOf(PlayerBulletBasic)).call(this, props));
 
-    _this2.sprite = _this2.images.laserGreen;
+    _this2.sprite = _this2.images.beams;
     return _this2;
   }
 
@@ -473,7 +473,7 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
     key: 'render',
     value: function render(ctx) {
       this.move();
-      ctx.drawImage(this.sprite, this.posX, this.posY);
+      ctx.drawImage(this.sprite, 140, 318, 45, 77, this.posX, this.posY, 20, 40);
     }
   }]);
 
@@ -627,17 +627,29 @@ var ImageableSingleton = function ImageableSingleton() {
 
   if (!instance) {
     instance = this;
+
+    // scrolling background
     this.backgroundImg = new Image();
     this.backgroundImg.src = './assets/background1.png';
+
+    // bullets and effects
     this.laserRed = new Image();
     this.laserRed.src = './assets/laserRed.png';
     this.laserGreen = new Image();
-    console.log(this.laserGreen.height);
     this.laserGreen.src = './assets/laserGreen.png';
+    this.beams = new Image();
+    this.beams.src = './assets/beams.png';
+
+    // enemy ships
+
 
     // player ship sprite: 420 x 85, 4 parts, left dmg normal right
     this.playerShip = new Image();
-    this.playerShip.src = './assets/playerShip.png';
+    this.playerShip.src = './assets/playership.png';
+    this.playerShipR = new Image();
+    this.playerShipR.src = './assets/playership-right.png';
+    this.playerShipL = new Image();
+    this.playerShipL.src = './assets/playership-left.png';
   }
 
   return instance;
