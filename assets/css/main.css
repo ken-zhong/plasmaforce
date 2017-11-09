@@ -1,3 +1,12 @@
+.canvas-container {
+  position: relative;
+  margin: 0 auto;
+  width: 400px;
+}
+
 canvas {
   border: 10px solid red;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
