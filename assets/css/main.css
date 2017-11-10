@@ -8,7 +8,9 @@ html, body {
 }
 
 a {
+  display: inline-block;
   color: white;
+  margin-top: .5em;
 }
 
 body {
@@ -35,12 +37,24 @@ canvas {
   font-size: 1.5em;
   width: fit-content;
   text-align: center;
+  margin-left: 2em;
 }
   .title-text {
+    text-decoration: underline;
     display: inline-block;
     font-size: 1.5em;
+    margin-top: 2em;
     margin-bottom: .7em;
   }
   .credits {
+    display: inline-block;
+    margin-top: .5em;
     font-size: .8em;
   }
+
+#mute-control {
+  display: inline-block;
+  cursor: pointer;
+  padding: .5em;
+  margin-top: .5em;
+}

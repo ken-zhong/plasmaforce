@@ -5,6 +5,7 @@
     <title>PlasmaForce</title>
     <link rel="stylesheet" href="./assets/css/fonts/stylesheet.css">
     <link rel="stylesheet" href="./assets/css/main.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
     <header></header>
@@ -16,11 +17,17 @@
         <br>
         ← ↑ ↓ → to move
         <br>
+        <span id="mute-control">
+          <i class="fa fa-volume-up" aria-hidden="true"></i> /
+          <i class="fa fa-volume-off" aria-hidden="true"></i>
+          <!-- Mute/Unmute -->
+        </span>
+        <br>
         <span class='credits'>
           Created by Ken Zhong
           <br>
-          <a href="#">repo</a> | 
-          <a href="#">portfolio</a>
+          <a href="#"><i class="fa fa-github" aria-hidden="true"></i> repo</a> |
+          <a href="#"><i class="fa fa-info-circle" aria-hidden="true"></i> portfolio</a>
         </span>
       </div>
       <canvas id="background-canvas" width="450" height="700"></canvas>
