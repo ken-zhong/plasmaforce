@@ -7,18 +7,12 @@ html, body {
   color: orange;
 }
 
+a {
+  color: white;
+}
+
 body {
   background-color: black;
-}
-
-.canvas-container {
-  position: relative;
-  margin: 0 auto;
-  height: 100%;
-}
-
-.text-box {
-  font-size: 2em;
 }
 
 canvas {
@@ -30,3 +24,23 @@ canvas {
   right: 0;
   height: 100%;
 }
+
+.canvas-container {
+  position: relative;
+  margin: 0 auto;
+  height: 100%;
+}
+
+.text-box {
+  font-size: 1.5em;
+  width: fit-content;
+  text-align: center;
+}
+  .title-text {
+    display: inline-block;
+    font-size: 1.5em;
+    margin-bottom: .7em;
+  }
+  .credits {
+    font-size: .8em;
+  }

@@ -106,9 +106,13 @@ var _background = __webpack_require__(7);
 
 var _background2 = _interopRequireDefault(_background);
 
-var _enemy_ships = __webpack_require__(9);
+var _enemy_ships = __webpack_require__(12);
 
 var Enemies = _interopRequireWildcard(_enemy_ships);
+
+var _util = __webpack_require__(4);
+
+var Util = _interopRequireWildcard(_util);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -120,17 +124,18 @@ var Game = function () {
   function Game(player) {
     _classCallCheck(this, Game);
 
-    this.canvas = document.querySelector('#game-canvas');
     this.bgCanvas = document.querySelector('#background-canvas');
+    this.canvas = document.querySelector('#game-canvas');
     this.canvasContext = this.canvas.getContext('2d');
     this.bgContext = this.bgCanvas.getContext('2d');
     this.bg = new _background2.default();
-
     this.player = player;
     this.showTitleScreen = true;
     this.showGameOverScreen = false;
     this.bullets = [];
     this.enemies = [];
+    this.enemies.push(new Enemies.GruntShip());
+    this.enemies.push(new Enemies.GruntShip());
     this.enemies.push(new Enemies.GruntShip());
   }
 
@@ -140,16 +145,26 @@ var Game = function () {
       this.render();
     }
   }, {
+    key: 'handleBulletHit',
+    value: function handleBulletHit(bullet, ship) {
+      bullet.destroySelf();
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this = this;
 
+      // RENDER LOOP: loop through and render each ship, and then render
+      // each ship's bullets
       this.clearCanvas();
       this.bg.render(this.bgContext);
-      this.player.render(this.canvasContext);
-      // this.bullets = this.player.playerBullets
       this.player.playerBullets.forEach(function (bullet) {
         bullet.render(_this.canvasContext);
+        _this.enemies.forEach(function (ship) {
+          if (Util.checkCollision(ship, bullet)) {
+            _this.handleBulletHit(bullet, ship);
+          }
+        });
       });
       this.enemies.forEach(function (ship) {
         ship.render(_this.canvasContext);
@@ -157,12 +172,13 @@ var Game = function () {
           return bullet.render(_this.canvasContext);
         });
       });
+      this.player.render(this.canvasContext);
       window.requestAnimationFrame(this.render.bind(this));
     }
   }, {
     key: 'clearCanvas',
     value: function clearCanvas() {
-      this.canvasContext.clearRect(0, 0, 400, 700);
+      this.canvasContext.clearRect(0, 0, Util.canvasWidth, Util.canvasHeight);
     }
   }]);
 
@@ -227,8 +243,8 @@ var Player = function (_MovingObject) {
     _this.playerBullets = [];
     _this.HP = 5;
     _this.playerController();
-    _this.shipW = 30;
-    _this.shipH = 46;
+    _this.hitboxW = 30;
+    _this.hitboxH = 46;
     return _this;
   }
 
@@ -238,7 +254,7 @@ var Player = function (_MovingObject) {
       var bulletData = {
         speedX: [-1, 0, 1][Math.floor(Math.random() * 3)],
         speedY: -10,
-        posX: this.posX + Math.floor(this.shipW / 2) - 10,
+        posX: this.posX + Math.floor(this.hitboxW / 2) - 10,
         posY: this.posY - 20
       };
       var newBullet = new _bullet.PlayerBulletBasic(bulletData);
@@ -287,10 +303,10 @@ var Player = function (_MovingObject) {
           this.bulletCooldown--;
         }
       }
-      if (this.posX + this.speedX >= 0 && this.posX + this.speedX <= _util.canvasWidth - this.shipW) {
+      if (this.posX + this.speedX >= 0 && this.posX + this.speedX <= _util.canvasWidth - this.hitboxW) {
         this.posX += this.speedX;
       }
-      if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= _util.canvasHeight - this.shipH) {
+      if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= _util.canvasHeight - this.hitboxH) {
         this.posY += this.speedY;
       }
     }
@@ -304,16 +320,11 @@ var Player = function (_MovingObject) {
   }, {
     key: 'render',
     value: function render(ctx) {
-      // optimization for speed?, uncomment this if needed
       if (this.bulletCooldown === 0) {
         this.deleteBullets();
       }
       this.calculateInertia();
       this.move();
-      // ctx.fillStyle = 'grey'
-      // ctx.fillRect(this.posX, this.posY, 20, 20)
-
-      // player ship sprite: 420 x 85, 4 parts, left dmg normal right
       ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()));
     }
   }, {
@@ -321,9 +332,9 @@ var Player = function (_MovingObject) {
     value: function getSprite() {
       var frame = [0, 1][Math.floor(Math.random() * 2)];
 
-      var normalSprite = [[this.images.playerShip, 0, 0, 32, 44, this.posX, this.posY, this.shipW, this.shipH], [this.images.playerShip, 32, 0, 32, 44, this.posX, this.posY, this.shipW, this.shipH]];
-      var leftSprite = [[this.images.playerShipL, 0, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH], [this.images.playerShipL, 29, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH]];
-      var rightSprite = [[this.images.playerShipR, 0, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH], [this.images.playerShipR, 29, 0, 29, 44, this.posX, this.posY, this.shipW, this.shipH]];
+      var normalSprite = [[this.images.playerShip, 0, 0, 32, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShip, 32, 0, 32, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
+      var leftSprite = [[this.images.playerShipL, 0, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShipL, 29, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
+      var rightSprite = [[this.images.playerShipR, 0, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShipR, 29, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
 
       if (this.speedX === 0) {
         return normalSprite[frame];
@@ -343,15 +354,19 @@ var Player = function (_MovingObject) {
 
       document.addEventListener('keydown', function (e) {
         switch (e.keyCode) {
+          case 65:
           case 37:
             _this2.actions.moveLeft = true;
             break;
+          case 87:
           case 38:
             _this2.actions.moveUp = true;
             break;
+          case 68:
           case 39:
             _this2.actions.moveRight = true;
             break;
+          case 83:
           case 40:
             _this2.actions.moveDown = true;
             break;
@@ -365,15 +380,19 @@ var Player = function (_MovingObject) {
       });
       document.addEventListener('keyup', function (e) {
         switch (e.keyCode) {
+          case 65:
           case 37:
             _this2.actions.moveLeft = false;
             break;
+          case 87:
           case 38:
             _this2.actions.moveUp = false;
             break;
+          case 68:
           case 39:
             _this2.actions.moveRight = false;
             break;
+          case 83:
           case 40:
             _this2.actions.moveDown = false;
             break;
@@ -405,9 +424,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var canvasHeight = exports.canvasHeight = 700;
-var canvasWidth = exports.canvasWidth = 400;
+var canvasWidth = exports.canvasWidth = 450;
 
-var hitDetection = exports.hitDetection = function hitDetection(ship, bullet) {};
+var checkCollision = exports.checkCollision = function checkCollision(obj1, obj2) {
+  if (obj1.posY + obj1.hitboxH < obj2.posY || obj1.posY > obj2.posY + obj2.hitboxH || obj1.posX + obj1.hitboxW < obj2.posX || obj1.posX > obj2.posX + obj2.hitboxW) {
+    return false;
+  } else {
+    return true;
+  }
+};
 
 /***/ }),
 /* 5 */
@@ -477,8 +502,8 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
 
     var _this2 = _possibleConstructorReturn(this, (PlayerBulletBasic.__proto__ || Object.getPrototypeOf(PlayerBulletBasic)).call(this, props));
 
-    _this2.bulletW = 20;
-    _this2.bulletH = 40;
+    _this2.hitboxW = 20;
+    _this2.hitboxH = 40;
     return _this2;
   }
 
@@ -498,7 +523,7 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
     key: 'render',
     value: function render(ctx) {
       this.move();
-      ctx.drawImage(this.sprite, 140, 318, 45, 77, this.posX, this.posY, this.bulletW, this.bulletH);
+      ctx.drawImage(this.sprite, 140, 318, 45, 77, this.posX, this.posY, this.hitboxW, this.hitboxH);
     }
   }]);
 
@@ -513,8 +538,8 @@ var BasicEnemyBullet = exports.BasicEnemyBullet = function (_Bullet2) {
 
     var _this3 = _possibleConstructorReturn(this, (BasicEnemyBullet.__proto__ || Object.getPrototypeOf(BasicEnemyBullet)).call(this, props));
 
-    _this3.bulletW = 19;
-    _this3.bulletH = 19;
+    _this3.hitboxW = 19;
+    _this3.hitboxH = 19;
     return _this3;
   }
 
@@ -532,7 +557,7 @@ var BasicEnemyBullet = exports.BasicEnemyBullet = function (_Bullet2) {
     key: 'render',
     value: function render(ctx) {
       this.move();
-      ctx.drawImage(this.sprite, 36, 115, 19, 19, this.posX, this.posY, this.bulletW, this.bulletH);
+      ctx.drawImage(this.sprite, 36, 115, 19, 19, this.posX, this.posY, this.hitboxW, this.hitboxH);
     }
   }]);
 
@@ -691,19 +716,17 @@ var ImageableSingleton = function ImageableSingleton() {
     this.backgroundImg = new Image();
     this.backgroundImg.src = './assets/background1.jpg';
 
-    // bullets and effects
-    this.laserRed = new Image();
-    this.laserRed.src = './assets/laserRed.png';
-    this.laserGreen = new Image();
-    this.laserGreen.src = './assets/laserGreen.png';
+    // bullets and beam effects
     this.beams = new Image();
     this.beams.src = './assets/beams.png';
 
     // enemy ships
+    this.enemySuicider = new Image();
+    this.enemySuicider.src = './assets/enemy_suicider.png';
     this.enemyGrunt = new Image();
-    this.enemyGrunt.src = './assets/enemy_1grunt.png';
+    this.enemyGrunt.src = './assets/enemy_grunt.png';
 
-    // player ship sprite: 420 x 85, 4 parts, left dmg normal right
+    // player ship sprite
     this.playerShip = new Image();
     this.playerShip.src = './assets/playership.png';
     this.playerShipR = new Image();
@@ -718,7 +741,10 @@ var ImageableSingleton = function ImageableSingleton() {
 exports.default = ImageableSingleton;
 
 /***/ }),
-/* 9 */
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -727,7 +753,31 @@ exports.default = ImageableSingleton;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.GruntShip = undefined;
+exports.GruntShip = exports.Suicider = undefined;
+
+var _suicider = __webpack_require__(14);
+
+var _suicider2 = _interopRequireDefault(_suicider);
+
+var _grunt = __webpack_require__(15);
+
+var _grunt2 = _interopRequireDefault(_grunt);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.Suicider = _suicider2.default;
+exports.GruntShip = _grunt2.default;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -735,13 +785,7 @@ var _moving_object = __webpack_require__(6);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
-var _bullet = __webpack_require__(5);
-
-var _util = __webpack_require__(4);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -759,7 +803,6 @@ var BaseShip = function (_MovingObject) {
     var _this = _possibleConstructorReturn(this, (BaseShip.__proto__ || Object.getPrototypeOf(BaseShip)).call(this, props));
 
     _this.bullets = [];
-    _this.limitY = Math.floor(_util.canvasHeight / 2);
     return _this;
   }
 
@@ -770,68 +813,178 @@ var BaseShip = function (_MovingObject) {
         return !bul.cleanup;
       });
     }
+  }, {
+    key: 'antiBumpTechnology',
+    value: function antiBumpTechnology() {
+      this.speedX = -this.speedX;
+    }
   }]);
 
   return BaseShip;
 }(_moving_object2.default);
 
+exports.default = BaseShip;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = __webpack_require__(13);
+
+var _base2 = _interopRequireDefault(_base);
+
+var _bullet = __webpack_require__(5);
+
+var _util = __webpack_require__(4);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// this ship just suicides into the enemy
+var Suicider = function (_BaseShip) {
+  _inherits(Suicider, _BaseShip);
+
+  function Suicider(props) {
+    _classCallCheck(this, Suicider);
+
+    var _this = _possibleConstructorReturn(this, (Suicider.__proto__ || Object.getPrototypeOf(Suicider)).call(this, props));
+
+    _this.sprite = _this.images.enemySuicider;
+    _this.tickCount = 0;
+    _this.boundY = Math.floor(Math.random() * 6) * 20;
+    _this.hitboxW = 16;
+    _this.hitboxH = 38;
+    _this.sprites = [[_this.sprite, 0, 0, 16, 38], [_this.sprite, 16, 0, 16, 38], [_this.sprite, 32, 0, 16, 38], [_this.sprite, 48, 0, 16, 38]];
+    return _this;
+  }
+
+  _createClass(Suicider, [{
+    key: 'move',
+    value: function move() {}
+  }, {
+    key: 'render',
+    value: function render(ctx) {
+      this.move();
+      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.hitboxW, this.hitboxH]));
+    }
+  }, {
+    key: 'getSprite',
+    value: function getSprite() {
+      if (this.tickCount >= 40) {
+        this.tickCount = 0;
+      }
+      var result = this.sprites[Math.floor(this.tickCount / 10)];
+      this.tickCount++;
+      return result;
+    }
+  }]);
+
+  return Suicider;
+}(_base2.default);
+
+exports.default = Suicider;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = __webpack_require__(13);
+
+var _base2 = _interopRequireDefault(_base);
+
+var _bullet = __webpack_require__(5);
+
+var _util = __webpack_require__(4);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 // lvl1, weakest enemy ship
-
-
-var GruntShip = exports.GruntShip = function (_BaseShip) {
+var GruntShip = function (_BaseShip) {
   _inherits(GruntShip, _BaseShip);
 
   function GruntShip(props) {
     _classCallCheck(this, GruntShip);
 
-    var _this2 = _possibleConstructorReturn(this, (GruntShip.__proto__ || Object.getPrototypeOf(GruntShip)).call(this, props));
+    props = props || { speedX: 2, posY: -100, posX: Math.abs(Math.floor(Math.random() * _util.canvasWidth) - 50) };
 
-    _this2.sprite = _this2.images.enemyGrunt;
-    _this2.tickCount = 0;
-    _this2.shipW = 32;
-    _this2.shipH = 76;
-    _this2.sprites = [[_this2.sprite, 0, 0, 16, 38], [_this2.sprite, 16, 0, 16, 38], [_this2.sprite, 32, 0, 16, 38], [_this2.sprite, 48, 0, 16, 38]];
-    return _this2;
+    var _this = _possibleConstructorReturn(this, (GruntShip.__proto__ || Object.getPrototypeOf(GruntShip)).call(this, props));
+
+    _this.sprite = _this.images.enemyGrunt;
+    _this.tickCount = 0;
+    _this.boundY = Math.floor(Math.random() * 6) * 20;
+    _this.hitboxW = 48;
+    _this.hitboxH = 72;
+    _this.sprites = [[_this.sprite, 0, 0, 32, 48], [_this.sprite, 32, 0, 32, 48], [_this.sprite, 64, 0, 32, 48], [_this.sprite, 96, 0, 32, 48]];
+    return _this;
   }
 
   _createClass(GruntShip, [{
     key: 'move',
     value: function move() {
-      if (this.tickCount === 40 && Math.random() * 2 > 1) {
-        this.fireBullet();
+      if (this.posY < this.boundY) {
+        this.posY += 5;
+      } else {
+        if (this.tickCount === 40 && Math.random() * 2 > 1) {
+          this.fireBullet();
+          this.deleteBullets();
+        }
+        if (this.posX + this.speedX >= 0 && this.posX + this.speedX <= _util.canvasWidth - this.hitboxW) {
+          this.posX += this.speedX;
+        } else {
+          this.antiBumpTechnology();
+        }
       }
     }
   }, {
     key: 'fireBullet',
     value: function fireBullet() {
-      var bulletData = {
-        speedX: 0,
-        speedY: 5,
-        posX: this.posX + Math.floor(this.shipW / 2) - 10,
-        posY: this.posY + this.shipH
+      var posObj = {
+        posX: this.posX + Math.floor(this.hitboxW / 2) - 10,
+        posY: this.posY + this.hitboxH - 20
       };
-      var bulletData2 = {
-        speedX: -3,
-        speedY: 4,
-        posX: this.posX + Math.floor(this.shipW / 2) - 10,
-        posY: this.posY + this.shipH
-      };
-      var bulletData3 = {
-        speedX: 3,
-        speedY: 4,
-        posX: this.posX + Math.floor(this.shipW / 2) - 10,
-        posY: this.posY + this.shipH
-      };
-      var newBullet = new _bullet.BasicEnemyBullet(bulletData);
-      var newBullet2 = new _bullet.BasicEnemyBullet(bulletData2);
-      var newBullet3 = new _bullet.BasicEnemyBullet(bulletData3);
-      this.bullets.push(newBullet, newBullet2, newBullet3);
+      var bulletData = Object.assign({ speedX: 0, speedY: 5 }, posObj);
+      var bulletData2 = Object.assign({ speedX: -3, speedY: 4 }, posObj);
+      var bulletData3 = Object.assign({ speedX: 3, speedY: 4 }, posObj);
+      this.bullets.push(new _bullet.BasicEnemyBullet(bulletData), new _bullet.BasicEnemyBullet(bulletData2), new _bullet.BasicEnemyBullet(bulletData3));
     }
   }, {
     key: 'render',
     value: function render(ctx) {
       this.move();
-      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.shipW, this.shipH]));
+      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.hitboxW, this.hitboxH]));
     }
   }, {
     key: 'getSprite',
@@ -846,7 +999,9 @@ var GruntShip = exports.GruntShip = function (_BaseShip) {
   }]);
 
   return GruntShip;
-}(BaseShip);
+}(_base2.default);
+
+exports.default = GruntShip;
 
 /***/ })
 /******/ ]);
