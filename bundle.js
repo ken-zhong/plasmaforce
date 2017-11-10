@@ -134,9 +134,9 @@ var Game = function () {
     this.showGameOverScreen = false;
     this.bullets = [];
     this.enemies = [];
-    this.enemies.push(new Enemies.GruntShip());
-    this.enemies.push(new Enemies.GruntShip());
-    this.enemies.push(new Enemies.GruntShip());
+    this.enemies.push(new Enemies.GruntShip({ bullets: this.bullets }));
+    this.enemies.push(new Enemies.GruntShip({ bullets: this.bullets }));
+    this.enemies.push(new Enemies.GruntShip({ bullets: this.bullets }));
   }
 
   _createClass(Game, [{
@@ -145,34 +145,68 @@ var Game = function () {
       this.render();
     }
   }, {
+    key: 'cleanup',
+    value: function cleanup() {
+      this.enemies = this.enemies.filter(function (ship) {
+        return !ship.cleanup;
+      });
+    }
+  }, {
+    key: 'deleteBullets',
+    value: function deleteBullets() {
+      var _this = this;
+
+      this.bullets = this.bullets.filter(function (bul) {
+        return !bul.cleanup;
+      });
+      this.enemies.forEach(function (ship) {
+        ship.bullets = _this.bullets;
+      });
+    }
+  }, {
+    key: 'handlePlayerAction',
+    value: function handlePlayerAction() {
+      var _this2 = this;
+
+      this.player.playerBullets.forEach(function (bullet) {
+        bullet.render(_this2.canvasContext);
+        _this2.enemies.forEach(function (ship) {
+          if (Util.checkCollision(ship, bullet)) {
+            _this2.handleBulletHit(bullet, ship);
+            _this2.player.deleteBullets();
+          }
+        });
+      });
+    }
+  }, {
     key: 'handleBulletHit',
     value: function handleBulletHit(bullet, ship) {
       bullet.destroySelf();
+      this.deleteBullets();
+      ship.hp--;
+      if (ship.hp <= 0) {
+        ship.destroySelf();
+        this.cleanup();
+      }
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this = this;
+      var _this3 = this;
 
       // RENDER LOOP: loop through and render each ship, and then render
       // each ship's bullets
       this.clearCanvas();
       this.bg.render(this.bgContext);
-      this.player.playerBullets.forEach(function (bullet) {
-        bullet.render(_this.canvasContext);
-        _this.enemies.forEach(function (ship) {
-          if (Util.checkCollision(ship, bullet)) {
-            _this.handleBulletHit(bullet, ship);
-          }
-        });
-      });
       this.enemies.forEach(function (ship) {
-        ship.render(_this.canvasContext);
-        ship.bullets.forEach(function (bullet) {
-          return bullet.render(_this.canvasContext);
-        });
+        ship.render(_this3.canvasContext);
+      });
+      this.bullets.forEach(function (bullet) {
+        bullet.render(_this3.canvasContext);
+        // handle player hit detection here
       });
       this.player.render(this.canvasContext);
+      this.handlePlayerAction();
       window.requestAnimationFrame(this.render.bind(this));
     }
   }, {
@@ -802,7 +836,7 @@ var BaseShip = function (_MovingObject) {
 
     var _this = _possibleConstructorReturn(this, (BaseShip.__proto__ || Object.getPrototypeOf(BaseShip)).call(this, props));
 
-    _this.bullets = [];
+    _this.bullets = props.bullets;
     return _this;
   }
 
@@ -938,10 +972,11 @@ var GruntShip = function (_BaseShip) {
   function GruntShip(props) {
     _classCallCheck(this, GruntShip);
 
-    props = props || { speedX: 2, posY: -100, posX: Math.abs(Math.floor(Math.random() * _util.canvasWidth) - 50) };
+    props = Object.assign({ speedX: 2, posY: -100, posX: Math.abs(Math.floor(Math.random() * _util.canvasWidth) - 50) }, props);
 
     var _this = _possibleConstructorReturn(this, (GruntShip.__proto__ || Object.getPrototypeOf(GruntShip)).call(this, props));
 
+    _this.hp = 10;
     _this.sprite = _this.images.enemyGrunt;
     _this.tickCount = 0;
     _this.boundY = Math.floor(Math.random() * 6) * 20;
@@ -959,7 +994,7 @@ var GruntShip = function (_BaseShip) {
       } else {
         if (this.tickCount === 40 && Math.random() * 2 > 1) {
           this.fireBullet();
-          this.deleteBullets();
+          // this.deleteBullets()
         }
         if (this.posX + this.speedX >= 0 && this.posX + this.speedX <= _util.canvasWidth - this.hitboxW) {
           this.posX += this.speedX;
