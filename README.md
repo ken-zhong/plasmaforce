@@ -9,10 +9,11 @@
 ### Credits:
 Code: Ken Zhong
 
-Background image: Satur9, https://opengameart.org/content/space-background-01
 Assets:
-- Space Shooter Art by Kenney, https://opengameart.org/content/space-shooter-art
+- Background image: Satur9, https://opengameart.org/content/space-background-01
+- Ship Assets by surt, https://opengameart.org/content/shmup-ships
 - Lasers and Beams by Rawdanitsu, https://opengameart.org/content/lasers-and-beams
+- Font, 'Arcade Classic' by PizzaDude, https://www.dafont.com/arcade-classic-pizz.font
 
 Resources I looked at:
 http://blog.sklambert.com/html5-canvas-game-panning-a-background/
