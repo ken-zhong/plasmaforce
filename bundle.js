@@ -153,6 +153,9 @@ var Game = function () {
       });
       this.enemies.forEach(function (ship) {
         ship.render(_this.canvasContext);
+        ship.bullets.forEach(function (bullet) {
+          return bullet.render(_this.canvasContext);
+        });
       });
       window.requestAnimationFrame(this.render.bind(this));
     }
@@ -469,10 +472,14 @@ var Bullet = exports.Bullet = function (_MovingObject) {
 var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
   _inherits(PlayerBulletBasic, _Bullet);
 
-  function PlayerBulletBasic() {
+  function PlayerBulletBasic(props) {
     _classCallCheck(this, PlayerBulletBasic);
 
-    return _possibleConstructorReturn(this, (PlayerBulletBasic.__proto__ || Object.getPrototypeOf(PlayerBulletBasic)).apply(this, arguments));
+    var _this2 = _possibleConstructorReturn(this, (PlayerBulletBasic.__proto__ || Object.getPrototypeOf(PlayerBulletBasic)).call(this, props));
+
+    _this2.bulletW = 20;
+    _this2.bulletH = 40;
+    return _this2;
   }
 
   _createClass(PlayerBulletBasic, [{
@@ -491,7 +498,7 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
     key: 'render',
     value: function render(ctx) {
       this.move();
-      ctx.drawImage(this.sprite, 140, 318, 45, 77, this.posX, this.posY, 20, 40);
+      ctx.drawImage(this.sprite, 140, 318, 45, 77, this.posX, this.posY, this.bulletW, this.bulletH);
     }
   }]);
 
@@ -501,19 +508,21 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
 var BasicEnemyBullet = exports.BasicEnemyBullet = function (_Bullet2) {
   _inherits(BasicEnemyBullet, _Bullet2);
 
-  function BasicEnemyBullet() {
+  function BasicEnemyBullet(props) {
     _classCallCheck(this, BasicEnemyBullet);
 
-    return _possibleConstructorReturn(this, (BasicEnemyBullet.__proto__ || Object.getPrototypeOf(BasicEnemyBullet)).apply(this, arguments));
+    var _this3 = _possibleConstructorReturn(this, (BasicEnemyBullet.__proto__ || Object.getPrototypeOf(BasicEnemyBullet)).call(this, props));
+
+    _this3.bulletW = 19;
+    _this3.bulletH = 19;
+    return _this3;
   }
 
   _createClass(BasicEnemyBullet, [{
     key: 'move',
     value: function move() {
       // give bullets a slight spread
-      if (this.posY % 3 === 0 && this.speedX !== 0) {
-        this.posX += this.speedX;
-      }
+      this.posX += this.speedX;
       this.posY += this.speedY;
       if (this.posX < -20 || this.posX > _util.canvasWidth || this.posY < 0 || this.posY > _util.canvasHeight) {
         this.destroySelf();
@@ -523,7 +532,7 @@ var BasicEnemyBullet = exports.BasicEnemyBullet = function (_Bullet2) {
     key: 'render',
     value: function render(ctx) {
       this.move();
-      ctx.drawImage(this.sprite, 140, 318, 45, 77, this.posX, this.posY, 20, 40);
+      ctx.drawImage(this.sprite, 36, 115, 19, 19, this.posX, this.posY, this.bulletW, this.bulletH);
     }
   }]);
 
@@ -787,16 +796,40 @@ var GruntShip = exports.GruntShip = function (_BaseShip) {
 
   _createClass(GruntShip, [{
     key: 'move',
-    value: function move() {}
-  }, {
-    key: 'fireBullet',
-    value: function fireBullet() {}
-  }, {
-    key: 'render',
-    value: function render(ctx) {
+    value: function move() {
       if (this.tickCount === 40 && Math.random() * 2 > 1) {
         this.fireBullet();
       }
+    }
+  }, {
+    key: 'fireBullet',
+    value: function fireBullet() {
+      var bulletData = {
+        speedX: 0,
+        speedY: 5,
+        posX: this.posX + Math.floor(this.shipW / 2) - 10,
+        posY: this.posY + this.shipH
+      };
+      var bulletData2 = {
+        speedX: -3,
+        speedY: 4,
+        posX: this.posX + Math.floor(this.shipW / 2) - 10,
+        posY: this.posY + this.shipH
+      };
+      var bulletData3 = {
+        speedX: 3,
+        speedY: 4,
+        posX: this.posX + Math.floor(this.shipW / 2) - 10,
+        posY: this.posY + this.shipH
+      };
+      var newBullet = new _bullet.BasicEnemyBullet(bulletData);
+      var newBullet2 = new _bullet.BasicEnemyBullet(bulletData2);
+      var newBullet3 = new _bullet.BasicEnemyBullet(bulletData3);
+      this.bullets.push(newBullet, newBullet2, newBullet3);
+    }
+  }, {
+    key: 'render',
+    value: function render(ctx) {
       this.move();
       ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.shipW, this.shipH]));
     }
