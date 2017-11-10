@@ -14,6 +14,9 @@ Assets:
 - Ship Assets by surt, https://opengameart.org/content/shmup-ships
 - Lasers and Beams by Rawdanitsu, https://opengameart.org/content/lasers-and-beams
 - Font, 'Arcade Classic' by PizzaDude, https://www.dafont.com/arcade-classic-pizz.font
+- Sound effects:
+  - Iwan Gabovitch https://opengameart.org/content/synthesized-explosion
+  - Blender Foundation https://opengameart.org/content/big-explosion
 
 Resources I looked at:
 http://blog.sklambert.com/html5-canvas-game-panning-a-background/
