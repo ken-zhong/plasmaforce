@@ -80,6 +80,9 @@ var _player2 = _interopRequireDefault(_player);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import Howler from 'howler'
+
+
 document.addEventListener('DOMContentLoaded', function () {
   var player = new _player2.default();
   var game = new _game2.default(player);
@@ -401,6 +404,8 @@ Object.defineProperty(exports, "__esModule", {
 var canvasHeight = exports.canvasHeight = 700;
 var canvasWidth = exports.canvasWidth = 400;
 
+var hitDetection = exports.hitDetection = function hitDetection(ship, bullet) {};
+
 /***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -411,7 +416,7 @@ var canvasWidth = exports.canvasWidth = 400;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PlayerBulletBasic = exports.Bullet = undefined;
+exports.BasicEnemyBullet = exports.PlayerBulletBasic = exports.Bullet = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -432,10 +437,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Bullet = exports.Bullet = function (_MovingObject) {
   _inherits(Bullet, _MovingObject);
 
-  function Bullet() {
+  function Bullet(props) {
     _classCallCheck(this, Bullet);
 
-    return _possibleConstructorReturn(this, (Bullet.__proto__ || Object.getPrototypeOf(Bullet)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Bullet.__proto__ || Object.getPrototypeOf(Bullet)).call(this, props));
+
+    _this.sprite = _this.images.beams;
+    return _this;
   }
 
   _createClass(Bullet, [{
@@ -461,13 +469,10 @@ var Bullet = exports.Bullet = function (_MovingObject) {
 var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
   _inherits(PlayerBulletBasic, _Bullet);
 
-  function PlayerBulletBasic(props) {
+  function PlayerBulletBasic() {
     _classCallCheck(this, PlayerBulletBasic);
 
-    var _this2 = _possibleConstructorReturn(this, (PlayerBulletBasic.__proto__ || Object.getPrototypeOf(PlayerBulletBasic)).call(this, props));
-
-    _this2.sprite = _this2.images.beams;
-    return _this2;
+    return _possibleConstructorReturn(this, (PlayerBulletBasic.__proto__ || Object.getPrototypeOf(PlayerBulletBasic)).apply(this, arguments));
   }
 
   _createClass(PlayerBulletBasic, [{
@@ -491,6 +496,38 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
   }]);
 
   return PlayerBulletBasic;
+}(Bullet);
+
+var BasicEnemyBullet = exports.BasicEnemyBullet = function (_Bullet2) {
+  _inherits(BasicEnemyBullet, _Bullet2);
+
+  function BasicEnemyBullet() {
+    _classCallCheck(this, BasicEnemyBullet);
+
+    return _possibleConstructorReturn(this, (BasicEnemyBullet.__proto__ || Object.getPrototypeOf(BasicEnemyBullet)).apply(this, arguments));
+  }
+
+  _createClass(BasicEnemyBullet, [{
+    key: 'move',
+    value: function move() {
+      // give bullets a slight spread
+      if (this.posY % 3 === 0 && this.speedX !== 0) {
+        this.posX += this.speedX;
+      }
+      this.posY += this.speedY;
+      if (this.posX < -20 || this.posX > _util.canvasWidth || this.posY < 0 || this.posY > _util.canvasHeight) {
+        this.destroySelf();
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render(ctx) {
+      this.move();
+      ctx.drawImage(this.sprite, 140, 318, 45, 77, this.posX, this.posY, 20, 40);
+    }
+  }]);
+
+  return BasicEnemyBullet;
 }(Bullet);
 
 /***/ }),
@@ -691,6 +728,8 @@ var _moving_object2 = _interopRequireDefault(_moving_object);
 
 var _bullet = __webpack_require__(5);
 
+var _util = __webpack_require__(4);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -711,6 +750,7 @@ var BaseShip = function (_MovingObject) {
     var _this = _possibleConstructorReturn(this, (BaseShip.__proto__ || Object.getPrototypeOf(BaseShip)).call(this, props));
 
     _this.bullets = [];
+    _this.limitY = Math.floor(_util.canvasHeight / 2);
     return _this;
   }
 
@@ -741,6 +781,7 @@ var GruntShip = exports.GruntShip = function (_BaseShip) {
     _this2.tickCount = 0;
     _this2.shipW = 32;
     _this2.shipH = 76;
+    _this2.sprites = [[_this2.sprite, 0, 0, 16, 38], [_this2.sprite, 16, 0, 16, 38], [_this2.sprite, 32, 0, 16, 38], [_this2.sprite, 48, 0, 16, 38]];
     return _this2;
   }
 
@@ -753,11 +794,11 @@ var GruntShip = exports.GruntShip = function (_BaseShip) {
   }, {
     key: 'render',
     value: function render(ctx) {
-      if (this.tickCount === 40) {
+      if (this.tickCount === 40 && Math.random() * 2 > 1) {
         this.fireBullet();
       }
       this.move();
-      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()));
+      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.shipW, this.shipH]));
     }
   }, {
     key: 'getSprite',
@@ -765,8 +806,7 @@ var GruntShip = exports.GruntShip = function (_BaseShip) {
       if (this.tickCount >= 40) {
         this.tickCount = 0;
       }
-      var sprites = [[this.sprite, 0, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH], [this.sprite, 16, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH], [this.sprite, 32, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH], [this.sprite, 48, 0, 16, 38, this.posX, this.posY, this.shipW, this.shipH]];
-      var result = sprites[Math.floor(this.tickCount / 10)];
+      var result = this.sprites[Math.floor(this.tickCount / 10)];
       this.tickCount++;
       return result;
     }
