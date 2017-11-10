@@ -478,7 +478,7 @@ var PlayerBulletBasic = exports.PlayerBulletBasic = function (_Bullet) {
         this.posX += this.speedX;
       }
       this.posY += this.speedY;
-      if (this.posX < 0 || this.posX > _util.canvasWidth || this.posY < 0 || this.posY > _util.canvasHeight) {
+      if (this.posX < -20 || this.posX > _util.canvasWidth || this.posY < 0 || this.posY > _util.canvasHeight) {
         this.destroySelf();
       }
     }

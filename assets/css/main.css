@@ -1,6 +1,10 @@
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: 'arcadeclassicregular';
+  color: orange;
 }
 
 body {
@@ -10,11 +14,19 @@ body {
 .canvas-container {
   position: relative;
   margin: 0 auto;
-  width: 400px;
+  height: 100%;
+}
+
+.text-box {
+  font-size: 2em;
 }
 
 canvas {
   position: absolute;
+  margin-left: auto;
+  margin-right: auto;
   top: 0;
   left: 0;
+  right: 0;
+  height: 100%;
 }
