@@ -84,6 +84,49 @@ var checkCollision = exports.checkCollision = function checkCollision(obj1, obj2
   }
 };
 
+var renderTitleScreen = exports.renderTitleScreen = function renderTitleScreen(ctx) {
+  ctx.fillStyle = '#ff9e4f';
+  ctx.font = '48px arcadeclassicregular';
+  ctx.fillText('PlasmaForce', 80, 200);
+  ctx.fillStyle = 'white';
+  ctx.font = '30px arcadeclassicregular';
+  ctx.fillText('press enter to start', 80, 350);
+};
+
+var formatScore = exports.formatScore = function formatScore(num) {
+  if (num > 999999) {
+    return '999999';
+  } else if (num > 99999) {
+    return num;
+  } else if (num > 9999) {
+    return '0' + num;
+  } else if (num > 999) {
+    return '00' + num;
+  } else if (num > 99) {
+    return '000' + num;
+  } else if (num > 9) {
+    return '0000' + num;
+  } else {
+    return '00000' + num;
+  }
+};
+
+var addListeners = exports.addListeners = function addListeners(game) {
+  document.addEventListener('keydown', function (e) {
+    switch (e.keyCode) {
+      case 13:
+        game.showTitleScreen = false;
+        break;
+      case 80:
+        game.pause = true;
+        break;
+      default:
+        console.log(e.keyCode);
+        break;
+    }
+  });
+};
+
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -3375,6 +3418,7 @@ var Game = function () {
     this.enemies = [];
     this.explosions = [];
     this.spawnEnemies();
+    Util.addListeners(this);
   }
 
   _createClass(Game, [{
@@ -3421,7 +3465,7 @@ var Game = function () {
         _this2.enemies.forEach(function (ship) {
           if (Util.checkCollision(ship, bullet)) {
             _this2.handleBulletHit(bullet, ship);
-            _this2.scores.score += 10;
+            _this2.scores.score += 5;
             _this2.player.deleteBullets();
           }
         });
@@ -3450,12 +3494,23 @@ var Game = function () {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
-
       // RENDER LOOP: loop through and render each ship, and then render
       // each ship's bullets
-      this.clearCanvas();
       this.bg.render(this.bgContext);
+      this.clearCanvas();
+      if (this.showTitleScreen) {
+        Util.renderTitleScreen(this.canvasContext);
+      } else if (this.showGameOverScreen) {} else {
+        this.renderGame();
+      }
+
+      window.requestAnimationFrame(this.render.bind(this));
+    }
+  }, {
+    key: 'renderGame',
+    value: function renderGame() {
+      var _this3 = this;
+
       this.enemies.forEach(function (ship) {
         ship.render(_this3.canvasContext);
       });
@@ -3471,7 +3526,6 @@ var Game = function () {
         return explosion.render(_this3.canvasContext);
       });
       this.ui.render(this.UIContext);
-      window.requestAnimationFrame(this.render.bind(this));
     }
   }]);
 
@@ -3704,7 +3758,7 @@ var GruntShip = function (_BaseShip) {
     key: 'move',
     value: function move() {
       if (this.posY < this.boundY) {
-        this.posY += 5;
+        this.posY += 2;
       } else {
         if (this.tickCount === 40 && Math.random() * 2 > 1) {
           this.fireBullet();
@@ -4105,7 +4159,9 @@ var UI = function () {
         ctx.clearRect(0, 0, Util.canvasWidth, 100);
         ctx.fillStyle = 'white';
         ctx.font = '24px arcadeclassicregular';
-        ctx.fillText('SCORE: ' + this.scores.score + '                                                     HI: ' + this.scores.hiScore, 40, 30);
+        ctx.fillText('SCORE: ' + Util.formatScore(this.scores.score), 40, 30);
+        ctx.fillText('HI: ' + Util.formatScore(this.scores.hiScore), 300, 30);
+
         if (this.scores.score > this.scores.hiScore) {
           window.localStorage.hiScore = this.scores.score;
           this.scores.hiScore = this.scores.score;

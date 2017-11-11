@@ -4,7 +4,7 @@ html, body {
   height: 100%;
   /*width: 100%;*/
   font-family: 'arcadeclassicregular';
-  color: orange;
+  color: #ff9e4f;
 }
 
 a {
@@ -46,11 +46,14 @@ canvas {
   margin-right: 2em;
 }
   .title-text {
-    text-decoration: underline;
     display: inline-block;
     font-size: 1.5em;
     margin-top: 2em;
     margin-bottom: .7em;
+    border-bottom: 3px double #ff9e4f;
+  }
+  .title-lg {
+    font-size: 1.4em;
   }
   .credits {
     display: inline-block;
