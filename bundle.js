@@ -90,7 +90,7 @@ var renderTitleScreen = exports.renderTitleScreen = function renderTitleScreen(c
   ctx.fillText('PlasmaForce', 80, 200);
   ctx.fillStyle = 'white';
   ctx.font = '30px arcadeclassicregular';
-  ctx.fillText('press enter to start', 80, 350);
+  ctx.fillText('press enter to start', 70, 350);
 };
 
 var formatScore = exports.formatScore = function formatScore(num) {
@@ -4094,8 +4094,8 @@ var Player = function (_MovingObject) {
       var frame = [0, 1][Math.floor(Math.random() * 2)];
 
       var normalSprite = [[this.images.playerShip, 0, 0, 32, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShip, 32, 0, 32, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
-      var leftSprite = [[this.images.playerShipL, 0, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShipL, 29, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
-      var rightSprite = [[this.images.playerShipR, 0, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShipR, 29, 0, 29, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
+      var leftSprite = [[this.images.playerShipL, 0, 0, 26, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShipL, 26, 0, 26, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
+      var rightSprite = [[this.images.playerShipR, 0, 0, 26, 44, this.posX, this.posY, this.hitboxW, this.hitboxH], [this.images.playerShipR, 26, 0, 26, 44, this.posX, this.posY, this.hitboxW, this.hitboxH]];
 
       if (this.speedX === 0) {
         return normalSprite[frame];
@@ -4201,6 +4201,8 @@ var ShipFactory = {
 
   spawnEnemies: function spawnEnemies() {
     var bullets = this.game.bullets;
+
+    // temp spawn to test features
     this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
     this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
     this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));

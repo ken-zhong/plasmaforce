@@ -5,6 +5,7 @@ html, body {
   /*width: 100%;*/
   font-family: 'arcadeclassicregular';
   color: #ff9e4f;
+  word-spacing: 5px;
 }
 
 a {
