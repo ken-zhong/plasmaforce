@@ -97,7 +97,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // This is the 'master' class that every single moving object inherits from
 
-var _imageable = __webpack_require__(3);
+var _imageable = __webpack_require__(2);
 
 var _imageable2 = _interopRequireDefault(_imageable);
 
@@ -150,6 +150,59 @@ exports.default = MovingObject;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/* global Image  */
+
+var instance = null;
+
+var ImageableSingleton = function ImageableSingleton() {
+  _classCallCheck(this, ImageableSingleton);
+
+  if (!instance) {
+    instance = this;
+
+    // scrolling background
+    this.backgroundImg = new Image();
+    this.backgroundImg.src = './assets/background1.jpg';
+
+    // bullets and beam effects
+    this.beams = new Image();
+    this.beams.src = './assets/beams.png';
+    this.explosion = new Image();
+    this.explosion.src = './assets/explosion.png';
+
+    // enemy ships
+    this.enemySuicider = new Image();
+    this.enemySuicider.src = './assets/enemy_suicider.png';
+    this.enemyGrunt = new Image();
+    this.enemyGrunt.src = './assets/enemy_grunt.png';
+
+    // player ship sprite
+    this.playerShip = new Image();
+    this.playerShip.src = './assets/playership.png';
+    this.playerShipR = new Image();
+    this.playerShipR.src = './assets/playership-right.png';
+    this.playerShipL = new Image();
+    this.playerShipL.src = './assets/playership-left.png';
+  }
+
+  return instance;
+};
+
+exports.default = ImageableSingleton;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -279,7 +332,7 @@ var BasicEnemyBullet = exports.BasicEnemyBullet = function (_Bullet2) {
 }(Bullet);
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -289,50 +342,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _howler = __webpack_require__(6);
 
-/* global Image  */
-
-var instance = null;
-
-var ImageableSingleton = function ImageableSingleton() {
-  _classCallCheck(this, ImageableSingleton);
-
-  if (!instance) {
-    instance = this;
-
-    // scrolling background
-    this.backgroundImg = new Image();
-    this.backgroundImg.src = './assets/background1.jpg';
-
-    // bullets and beam effects
-    this.beams = new Image();
-    this.beams.src = './assets/beams.png';
-    this.explosion = new Image();
-    this.explosion.src = './assets/explosion.png';
-
-    // enemy ships
-    this.enemySuicider = new Image();
-    this.enemySuicider.src = './assets/enemy_suicider.png';
-    this.enemyGrunt = new Image();
-    this.enemyGrunt.src = './assets/enemy_grunt.png';
-
-    // player ship sprite
-    this.playerShip = new Image();
-    this.playerShip.src = './assets/playership.png';
-    this.playerShipR = new Image();
-    this.playerShipR.src = './assets/playership-right.png';
-    this.playerShipL = new Image();
-    this.playerShipL.src = './assets/playership-left.png';
-  }
-
-  return instance;
+var SoundFx = {
+  playerBullet: new _howler.Howl({ src: './assets/sound/bullet01.mp3', volume: 0.8 }),
+  enemyBasicBullet: new _howler.Howl({ src: './assets/sound/bullet02.mp3', volume: 0.3 }),
+  hit: new _howler.Howl({ src: './assets/sound/explosion_hit.mp3' }),
+  explosion: new _howler.Howl({ src: './assets/sound/explosion_big.flac' })
 };
 
-exports.default = ImageableSingleton;
+exports.default = SoundFx;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -387,28 +409,6 @@ var BaseShip = function (_MovingObject) {
 }(_moving_object2.default);
 
 exports.default = BaseShip;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _howler = __webpack_require__(6);
-
-var SoundFx = {
-  playerBullet: new _howler.Howl({ src: './assets/sound/bullet01.mp3', volume: 0.8 }),
-  enemyBasicBullet: new _howler.Howl({ src: './assets/sound/bullet02.mp3', volume: 0.3 }),
-  hit: new _howler.Howl({ src: './assets/sound/explosion_hit.mp3' }),
-  explosion: new _howler.Howl({ src: './assets/sound/explosion_big.flac' })
-};
-
-exports.default = SoundFx;
 
 /***/ }),
 /* 6 */
@@ -3275,7 +3275,7 @@ var _game = __webpack_require__(8);
 
 var _game2 = _interopRequireDefault(_game);
 
-var _player = __webpack_require__(14);
+var _player = __webpack_require__(15);
 
 var _player2 = _interopRequireDefault(_player);
 
@@ -3334,11 +3334,11 @@ var _util = __webpack_require__(0);
 
 var Util = _interopRequireWildcard(_util);
 
-var _sound_fx = __webpack_require__(5);
+var _sound_fx = __webpack_require__(4);
 
 var _sound_fx2 = _interopRequireDefault(_sound_fx);
 
-var _explosion = __webpack_require__(15);
+var _explosion = __webpack_require__(14);
 
 var _explosion2 = _interopRequireDefault(_explosion);
 
@@ -3485,7 +3485,7 @@ var _moving_object = __webpack_require__(1);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
-var _imageable = __webpack_require__(3);
+var _imageable = __webpack_require__(2);
 
 var _imageable2 = _interopRequireDefault(_imageable);
 
@@ -3567,11 +3567,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _base = __webpack_require__(4);
+var _base = __webpack_require__(5);
 
 var _base2 = _interopRequireDefault(_base);
 
-var _bullet = __webpack_require__(2);
+var _bullet = __webpack_require__(3);
 
 var _util = __webpack_require__(0);
 
@@ -3642,15 +3642,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _base = __webpack_require__(4);
+var _base = __webpack_require__(5);
 
 var _base2 = _interopRequireDefault(_base);
 
-var _bullet = __webpack_require__(2);
+var _bullet = __webpack_require__(3);
 
 var _util = __webpack_require__(0);
 
-var _sound_fx = __webpack_require__(5);
+var _sound_fx = __webpack_require__(4);
 
 var _sound_fx2 = _interopRequireDefault(_sound_fx);
 
@@ -3778,15 +3778,73 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _imageable = __webpack_require__(2);
+
+var _imageable2 = _interopRequireDefault(_imageable);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Explosion = function () {
+  function Explosion(pos) {
+    var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 30;
+
+    _classCallCheck(this, Explosion);
+
+    var images = new _imageable2.default();
+    this.spriteSheet = images.explosion;
+    this.sprites = [];
+    this.tickCount = 31;
+    for (var i = 0; i <= 192; i += 64) {
+      for (var j = 0; j <= 192; j += 64) {
+        this.sprites.push([this.spriteSheet, j, i, 64, 64, pos[0], pos[1], size, size]);
+      }
+    }
+    this.sprites = this.sprites.slice(0).reverse().concat(this.sprites);
+  }
+
+  _createClass(Explosion, [{
+    key: 'render',
+    value: function render(ctx) {
+      if (this.tickCount >= 0) {
+        ctx.drawImage.apply(ctx, _toConsumableArray(this.sprites[Math.floor(this.tickCount)]));
+        this.tickCount--;
+      } else {
+        this.cleanup = true;
+      }
+    }
+  }]);
+
+  return Explosion;
+}();
+
+exports.default = Explosion;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _util = __webpack_require__(0);
 
-var _bullet = __webpack_require__(2);
+var _bullet = __webpack_require__(3);
 
 var _moving_object = __webpack_require__(1);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
-var _sound_fx = __webpack_require__(5);
+var _sound_fx = __webpack_require__(4);
 
 var _sound_fx2 = _interopRequireDefault(_sound_fx);
 
@@ -3995,64 +4053,6 @@ var Player = function (_MovingObject) {
 }(_moving_object2.default);
 
 exports.default = Player;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _imageable = __webpack_require__(3);
-
-var _imageable2 = _interopRequireDefault(_imageable);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Explosion = function () {
-  function Explosion(pos) {
-    var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 30;
-
-    _classCallCheck(this, Explosion);
-
-    var images = new _imageable2.default();
-    this.spriteSheet = images.explosion;
-    this.sprites = [];
-    this.tickCount = 31;
-    for (var i = 0; i <= 192; i += 64) {
-      for (var j = 0; j <= 192; j += 64) {
-        this.sprites.push([this.spriteSheet, j, i, 64, 64, pos[0], pos[1], size, size]);
-      }
-    }
-    this.sprites = this.sprites.slice(0).reverse().concat(this.sprites);
-  }
-
-  _createClass(Explosion, [{
-    key: 'render',
-    value: function render(ctx) {
-      if (this.tickCount >= 0) {
-        ctx.drawImage.apply(ctx, _toConsumableArray(this.sprites[Math.floor(this.tickCount)]));
-        this.tickCount--;
-      } else {
-        this.cleanup = true;
-      }
-    }
-  }]);
-
-  return Explosion;
-}();
-
-exports.default = Explosion;
 
 /***/ })
 /******/ ]);
