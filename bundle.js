@@ -84,15 +84,6 @@ var checkCollision = exports.checkCollision = function checkCollision(obj1, obj2
   }
 };
 
-var renderTitleScreen = exports.renderTitleScreen = function renderTitleScreen(ctx) {
-  ctx.fillStyle = '#ff9e4f';
-  ctx.font = '48px arcadeclassicregular';
-  ctx.fillText('PlasmaForce', 80, 200);
-  ctx.fillStyle = 'white';
-  ctx.font = '30px arcadeclassicregular';
-  ctx.fillText('press enter to start', 70, 350);
-};
-
 var formatScore = exports.formatScore = function formatScore(num) {
   if (num > 999999) {
     return '999999';
@@ -121,7 +112,6 @@ var addListeners = exports.addListeners = function addListeners(game) {
         game.pause = true;
         break;
       default:
-        console.log(e.keyCode);
         break;
     }
   });
@@ -140,7 +130,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // This is the 'master' class that every single moving object inherits from
 
-var _imageable = __webpack_require__(2);
+var _imageable = __webpack_require__(4);
 
 var _imageable2 = _interopRequireDefault(_imageable);
 
@@ -193,63 +183,6 @@ exports.default = MovingObject;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-      value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/* global Image  */
-
-var instance = null;
-
-var ImageableSingleton = function ImageableSingleton() {
-      _classCallCheck(this, ImageableSingleton);
-
-      if (!instance) {
-            instance = this;
-
-            // scrolling background
-            this.backgroundImg = new Image();
-            this.backgroundImg.src = './assets/background1.jpg';
-
-            // bullets and beam effects
-            this.beams = new Image();
-            this.beams.src = './assets/beams.png';
-            this.explosion = new Image();
-            this.explosion.src = './assets/explosion.png';
-
-            // enemy ships
-            this.enemySuicider = new Image();
-            this.enemySuicider.src = './assets/enemy_suicider.png';
-            this.enemyGrunt = new Image();
-            this.enemyGrunt.src = './assets/enemy_grunt.png';
-            this.enemySaucer = new Image();
-            this.enemySaucer.src = './assets/enemy_saucer.png';
-            this.enemyOculus = new Image();
-            this.enemyOculus.src = './assets/enemy_oculus.png';
-
-            // player ship sprite
-            this.playerShip = new Image();
-            this.playerShip.src = './assets/playership.png';
-            this.playerShipR = new Image();
-            this.playerShipR.src = './assets/playership-right.png';
-            this.playerShipL = new Image();
-            this.playerShipL.src = './assets/playership-left.png';
-      }
-
-      return instance;
-};
-
-exports.default = ImageableSingleton;
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -379,7 +312,7 @@ var BasicEnemyBullet = exports.BasicEnemyBullet = function (_Bullet2) {
 }(Bullet);
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -399,6 +332,65 @@ var SoundFx = {
 };
 
 exports.default = SoundFx;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+      value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/* global Image  */
+
+var instance = null;
+
+var ImageableSingleton = function ImageableSingleton() {
+      _classCallCheck(this, ImageableSingleton);
+
+      if (!instance) {
+            instance = this;
+
+            // scrolling background
+            this.backgroundImg = new Image();
+            this.backgroundImg.src = './assets/background1.jpg';
+
+            // bullets and beam effects
+            this.beams = new Image();
+            this.beams.src = './assets/beams.png';
+            this.explosion = new Image();
+            this.explosion.src = './assets/explosion.png';
+
+            // enemy ships
+            this.enemySuicider = new Image();
+            this.enemySuicider.src = './assets/enemy_suicider.png';
+            this.enemyGrunt = new Image();
+            this.enemyGrunt.src = './assets/enemy_grunt.png';
+            this.enemySaucerRed = new Image();
+            this.enemySaucerRed.src = './assets/enemy_saucer_red.png';
+            this.enemySaucerGreen = new Image();
+            this.enemySaucerGreen.src = './assets/enemy_saucer_green.png';
+            this.enemyOculus = new Image();
+            this.enemyOculus.src = './assets/enemy_oculus.png';
+
+            // player ship sprite
+            this.playerShip = new Image();
+            this.playerShip.src = './assets/playership.png';
+            this.playerShipR = new Image();
+            this.playerShipR.src = './assets/playership-right.png';
+            this.playerShipL = new Image();
+            this.playerShipL.src = './assets/playership-left.png';
+      }
+
+      return instance;
+};
+
+exports.default = ImageableSingleton;
 
 /***/ }),
 /* 5 */
@@ -3310,7 +3302,7 @@ exports.default = BaseShip;
   };
 })();
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
 /* 7 */
@@ -3323,7 +3315,7 @@ var _game = __webpack_require__(8);
 
 var _game2 = _interopRequireDefault(_game);
 
-var _player = __webpack_require__(16);
+var _player = __webpack_require__(18);
 
 var _player2 = _interopRequireDefault(_player);
 
@@ -3376,7 +3368,7 @@ var _background = __webpack_require__(9);
 
 var _background2 = _interopRequireDefault(_background);
 
-var _ship_factory = __webpack_require__(17);
+var _ship_factory = __webpack_require__(10);
 
 var _ship_factory2 = _interopRequireDefault(_ship_factory);
 
@@ -3384,15 +3376,15 @@ var _util = __webpack_require__(0);
 
 var Util = _interopRequireWildcard(_util);
 
-var _sound_fx = __webpack_require__(4);
+var _sound_fx = __webpack_require__(3);
 
 var _sound_fx2 = _interopRequireDefault(_sound_fx);
 
-var _explosion = __webpack_require__(14);
+var _explosion = __webpack_require__(16);
 
 var _explosion2 = _interopRequireDefault(_explosion);
 
-var _ui = __webpack_require__(15);
+var _ui = __webpack_require__(17);
 
 var _ui2 = _interopRequireDefault(_ui);
 
@@ -3501,7 +3493,7 @@ var Game = function () {
       this.bg.render(this.bgContext);
       this.clearGameCanvas();
       if (this.showTitleScreen) {
-        Util.renderTitleScreen(this.canvasContext);
+        this.renderTitleScreen(this.canvasContext);
       } else if (this.showGameOverScreen) {
         // TODO game over screen
       } else {
@@ -3531,6 +3523,16 @@ var Game = function () {
       });
       this.ui.render(this.UIContext);
     }
+  }, {
+    key: 'renderTitleScreen',
+    value: function renderTitleScreen(ctx) {
+      ctx.fillStyle = '#ff9e4f';
+      ctx.font = '48px arcadeclassicregular';
+      ctx.fillText('PlasmaForce', 80, 200);
+      ctx.fillStyle = 'white';
+      ctx.font = '30px arcadeclassicregular';
+      ctx.fillText('press enter to start', 70, 350);
+    }
   }]);
 
   return Game;
@@ -3555,7 +3557,7 @@ var _moving_object = __webpack_require__(1);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
-var _imageable = __webpack_require__(2);
+var _imageable = __webpack_require__(4);
 
 var _imageable2 = _interopRequireDefault(_imageable);
 
@@ -3612,17 +3614,89 @@ exports.default = Background;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _enemy_ships = __webpack_require__(11);
+
+var Enemies = _interopRequireWildcard(_enemy_ships);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+// Suicider - small enemy ship; no bullet logic
+// GruntShip - basic enemy, fires triangle spread bullets
+
+var ShipFactory = {
+  init: function init(game) {
+    this.game = game;
+    this.scores = game.scores;
+    this.waves = [this.addGrunt, this.addSaucer, this.addTwoSaucers];
+  },
+
+  spawnEnemies: function spawnEnemies() {
+    if (this.scores.score < 45) {
+      this.addGrunt();
+    } else if (this.scores.score < 145) {
+      this.addGrunt();
+      this.addGrunt();
+    } else if (this.scores.score < 300) {
+      this.addGrunt();
+      this.addGrunt();
+      this.addGrunt();
+    } else if (this.scores.score < 600) {
+      this.addSaucer();
+    } else if (this.scores.score < 1100) {
+      this.addGrunt();
+      this.addSaucer();
+    } else if (this.scores.score < 1600) {
+      this.addTwoSaucers();
+    } else {
+      this.randomWave();
+    }
+    this.randomWave();
+    // temp spawn to test features
+
+    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 20}))
+    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 320, posY: -400}))
+  },
+
+  addGrunt: function addGrunt() {
+    this.game.enemies.push(new Enemies.GruntShip({ bullets: this.game.bullets }));
+  },
+  addSaucer: function addSaucer() {
+    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets }));
+  },
+  addTwoSaucers: function addTwoSaucers() {
+    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 20 }));
+    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 320, posY: -400 }));
+  },
+  randomWave: function randomWave() {
+    this.waves[Math.floor(Math.random() * this.waves.length)].call(ShipFactory);
+    this.waves[Math.floor(Math.random() * this.waves.length)].call(ShipFactory);
+  }
+};
+
+exports.default = ShipFactory;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.SaucerShip = exports.GruntShip = exports.Suicider = undefined;
 
-var _suicider = __webpack_require__(11);
+var _suicider = __webpack_require__(12);
 
 var _suicider2 = _interopRequireDefault(_suicider);
 
-var _grunt = __webpack_require__(12);
+var _grunt = __webpack_require__(13);
 
 var _grunt2 = _interopRequireDefault(_grunt);
 
-var _saucer = __webpack_require__(18);
+var _saucer = __webpack_require__(15);
 
 var _saucer2 = _interopRequireDefault(_saucer);
 
@@ -3633,7 +3707,7 @@ exports.GruntShip = _grunt2.default;
 exports.SaucerShip = _saucer2.default;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3649,7 +3723,7 @@ var _base = __webpack_require__(5);
 
 var _base2 = _interopRequireDefault(_base);
 
-var _bullet = __webpack_require__(3);
+var _bullet = __webpack_require__(2);
 
 var _util = __webpack_require__(0);
 
@@ -3709,7 +3783,7 @@ var Suicider = function (_BaseShip) {
 exports.default = Suicider;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3725,11 +3799,11 @@ var _base = __webpack_require__(5);
 
 var _base2 = _interopRequireDefault(_base);
 
-var _bullet = __webpack_require__(3);
+var _bullet = __webpack_require__(2);
 
 var _util = __webpack_require__(0);
 
-var _sound_fx = __webpack_require__(4);
+var _sound_fx = __webpack_require__(3);
 
 var _sound_fx2 = _interopRequireDefault(_sound_fx);
 
@@ -3818,7 +3892,7 @@ var GruntShip = function (_BaseShip) {
 exports.default = GruntShip;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 var g;
@@ -3845,7 +3919,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3857,7 +3931,124 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _imageable = __webpack_require__(2);
+var _base = __webpack_require__(5);
+
+var _base2 = _interopRequireDefault(_base);
+
+var _bullet = __webpack_require__(2);
+
+var _util = __webpack_require__(0);
+
+var _sound_fx = __webpack_require__(3);
+
+var _sound_fx2 = _interopRequireDefault(_sound_fx);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// lvl2, fire circular spread
+var SaucerShip = function (_BaseShip) {
+  _inherits(SaucerShip, _BaseShip);
+
+  function SaucerShip(props) {
+    _classCallCheck(this, SaucerShip);
+
+    props = Object.assign({ speedY: 3, posY: -100, posX: Math.floor(_util.canvasWidth / 2 - 60) }, props);
+
+    var _this = _possibleConstructorReturn(this, (SaucerShip.__proto__ || Object.getPrototypeOf(SaucerShip)).call(this, props));
+
+    _this.hp = 36;
+    _this.sprite = _this.images.enemySaucerRed;
+    _this.tickCount = 0;
+    _this.hitboxW = 96;
+    _this.hitboxH = 90;
+    _this.sprites = [];
+    for (var i = 0; i <= 6; i++) {
+      _this.sprites.push([_this.sprite, i * 96, 0, 96, 90]);
+    }
+    for (var _i = 6; _i >= 0; _i--) {
+      _this.sprites.push([_this.sprite, _i * 96, 0, 96, 90]);
+    }
+    _this.BULLET_VECTORS = [[0, 5], [0, -5], [5, 0], [-5, 0], [-2, 4], [2, 4], [-2, -4], [2, -4], [4, 2], [4, -2], [-4, -2], [-4, 2]];
+    return _this;
+  }
+
+  _createClass(SaucerShip, [{
+    key: 'move',
+    value: function move() {
+      if (this.tickCount === 70) {
+        this.fireBullet();
+      }
+      if (this.posY < 0) {
+        this.posY += 2;
+      } else if (this.tickCount > 65 && this.tickCount < 100) {
+        return false;
+      } else if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= _util.canvasHeight - this.hitboxH) {
+        this.posY += this.speedY;
+      } else {
+        this.antiBumpTechnology();
+      }
+    }
+  }, {
+    key: 'fireBullet',
+    value: function fireBullet() {
+      var _this2 = this;
+
+      _sound_fx2.default.enemyBasicBullet.play();
+      var posObj = {
+        posX: this.posX + Math.floor(this.hitboxW / 2) - 10,
+        posY: this.posY + Math.floor(this.hitboxH / 2) - 10
+      };
+
+      this.BULLET_VECTORS.forEach(function (vector) {
+        var bulletData = Object.assign({ speedX: vector[0], speedY: vector[1] }, posObj);
+        _this2.bullets.push(new _bullet.BasicEnemyBullet(bulletData));
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render(ctx) {
+      this.move();
+      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.hitboxW, this.hitboxH]));
+    }
+  }, {
+    key: 'getSprite',
+    value: function getSprite() {
+      if (this.tickCount >= 140) {
+        this.tickCount = 0;
+      }
+      var result = this.sprites[Math.floor(this.tickCount / 10)];
+      this.tickCount++;
+      return result;
+    }
+  }]);
+
+  return SaucerShip;
+}(_base2.default);
+
+exports.default = SaucerShip;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _imageable = __webpack_require__(4);
 
 var _imageable2 = _interopRequireDefault(_imageable);
 
@@ -3903,7 +4094,7 @@ var Explosion = function () {
 exports.default = Explosion;
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3957,7 +4148,7 @@ var UI = function () {
 exports.default = UI;
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3971,13 +4162,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _util = __webpack_require__(0);
 
-var _bullet = __webpack_require__(3);
+var _bullet = __webpack_require__(2);
 
 var _moving_object = __webpack_require__(1);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
-var _sound_fx = __webpack_require__(4);
+var _sound_fx = __webpack_require__(3);
 
 var _sound_fx2 = _interopRequireDefault(_sound_fx);
 
@@ -4186,195 +4377,6 @@ var Player = function (_MovingObject) {
 }(_moving_object2.default);
 
 exports.default = Player;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _enemy_ships = __webpack_require__(10);
-
-var Enemies = _interopRequireWildcard(_enemy_ships);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-// Suicider - small enemy ship; no bullet logic
-// GruntShip - basic enemy, fires triangle spread bullets
-
-var ShipFactory = {
-  init: function init(game) {
-    this.game = game;
-    this.scores = game.scores;
-    this.waves = [this.addGrunt, this.addSaucer, this.addTwoSaucers];
-  },
-
-  spawnEnemies: function spawnEnemies() {
-    if (this.scores.score < 45) {
-      this.addGrunt();
-    } else if (this.scores.score < 145) {
-      this.addGrunt();
-      this.addGrunt();
-    } else if (this.scores.score < 300) {
-      this.addGrunt();
-      this.addGrunt();
-      this.addGrunt();
-    } else if (this.scores.score < 600) {
-      this.addSaucer();
-    } else if (this.scores.score < 1100) {
-      this.addGrunt();
-      this.addSaucer();
-    } else if (this.scores.score < 1600) {
-      this.addTwoSaucers();
-    } else {
-      this.randomWave();
-    }
-    this.randomWave();
-    // temp spawn to test features
-
-    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 20}))
-    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 320, posY: -400}))
-  },
-
-  addGrunt: function addGrunt() {
-    this.game.enemies.push(new Enemies.GruntShip({ bullets: this.game.bullets }));
-  },
-  addSaucer: function addSaucer() {
-    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets }));
-  },
-  addTwoSaucers: function addTwoSaucers() {
-    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 20 }));
-    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 320, posY: -400 }));
-  },
-  randomWave: function randomWave() {
-    this.waves[Math.floor(Math.random() * this.waves.length)].call(ShipFactory);
-    this.waves[Math.floor(Math.random() * this.waves.length)].call(ShipFactory);
-  }
-};
-
-exports.default = ShipFactory;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _base = __webpack_require__(5);
-
-var _base2 = _interopRequireDefault(_base);
-
-var _bullet = __webpack_require__(3);
-
-var _util = __webpack_require__(0);
-
-var _sound_fx = __webpack_require__(4);
-
-var _sound_fx2 = _interopRequireDefault(_sound_fx);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// lvl1, weakest enemy ship
-var SaucerShip = function (_BaseShip) {
-  _inherits(SaucerShip, _BaseShip);
-
-  function SaucerShip(props) {
-    _classCallCheck(this, SaucerShip);
-
-    props = Object.assign({ speedY: 3, posY: -100, posX: Math.floor(_util.canvasWidth / 2 - 60) }, props);
-
-    var _this = _possibleConstructorReturn(this, (SaucerShip.__proto__ || Object.getPrototypeOf(SaucerShip)).call(this, props));
-
-    _this.hp = 45;
-    _this.sprite = _this.images.enemySaucer;
-    _this.tickCount = 0;
-    _this.hitboxW = 125;
-    _this.hitboxH = 117;
-    _this.sprites = [];
-    for (var i = 0; i <= 6; i++) {
-      _this.sprites.push([_this.sprite, i * 96, 0, 96, 90]);
-    }
-    for (var _i = 6; _i >= 0; _i--) {
-      _this.sprites.push([_this.sprite, _i * 96, 0, 96, 90]);
-    }
-    _this.BULLET_VECTORS = [[0, 5], [0, -5], [5, 0], [-5, 0], [-2, 4], [2, 4], [-2, -4], [2, -4], [4, 2], [4, -2], [-4, -2], [-4, 2]];
-    return _this;
-  }
-
-  _createClass(SaucerShip, [{
-    key: 'move',
-    value: function move() {
-      if (this.tickCount === 70) {
-        this.fireBullet();
-      }
-      if (this.posY < 0) {
-        this.posY += 2;
-      } else if (this.tickCount > 65 && this.tickCount < 100) {
-        return false;
-      } else if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= _util.canvasHeight - this.hitboxH) {
-        this.posY += this.speedY;
-      } else {
-        this.antiBumpTechnology();
-      }
-    }
-  }, {
-    key: 'fireBullet',
-    value: function fireBullet() {
-      var _this2 = this;
-
-      _sound_fx2.default.enemyBasicBullet.play();
-      var posObj = {
-        posX: this.posX + Math.floor(this.hitboxW / 2) - 10,
-        posY: this.posY + Math.floor(this.hitboxH / 2) - 10
-      };
-
-      this.BULLET_VECTORS.forEach(function (vector) {
-        var bulletData = Object.assign({ speedX: vector[0], speedY: vector[1] }, posObj);
-        _this2.bullets.push(new _bullet.BasicEnemyBullet(bulletData));
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render(ctx) {
-      this.move();
-      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.hitboxW, this.hitboxH]));
-    }
-  }, {
-    key: 'getSprite',
-    value: function getSprite() {
-      if (this.tickCount >= 140) {
-        this.tickCount = 0;
-      }
-      var result = this.sprites[Math.floor(this.tickCount / 10)];
-      this.tickCount++;
-      return result;
-    }
-  }]);
-
-  return SaucerShip;
-}(_base2.default);
-
-exports.default = SaucerShip;
 
 /***/ })
 /******/ ]);
