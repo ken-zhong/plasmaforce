@@ -199,7 +199,7 @@ exports.default = MovingObject;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+      value: true
 });
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -209,37 +209,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var instance = null;
 
 var ImageableSingleton = function ImageableSingleton() {
-  _classCallCheck(this, ImageableSingleton);
+      _classCallCheck(this, ImageableSingleton);
 
-  if (!instance) {
-    instance = this;
+      if (!instance) {
+            instance = this;
 
-    // scrolling background
-    this.backgroundImg = new Image();
-    this.backgroundImg.src = './assets/background1.jpg';
+            // scrolling background
+            this.backgroundImg = new Image();
+            this.backgroundImg.src = './assets/background1.jpg';
 
-    // bullets and beam effects
-    this.beams = new Image();
-    this.beams.src = './assets/beams.png';
-    this.explosion = new Image();
-    this.explosion.src = './assets/explosion.png';
+            // bullets and beam effects
+            this.beams = new Image();
+            this.beams.src = './assets/beams.png';
+            this.explosion = new Image();
+            this.explosion.src = './assets/explosion.png';
 
-    // enemy ships
-    this.enemySuicider = new Image();
-    this.enemySuicider.src = './assets/enemy_suicider.png';
-    this.enemyGrunt = new Image();
-    this.enemyGrunt.src = './assets/enemy_grunt.png';
+            // enemy ships
+            this.enemySuicider = new Image();
+            this.enemySuicider.src = './assets/enemy_suicider.png';
+            this.enemyGrunt = new Image();
+            this.enemyGrunt.src = './assets/enemy_grunt.png';
 
-    // player ship sprite
-    this.playerShip = new Image();
-    this.playerShip.src = './assets/playership.png';
-    this.playerShipR = new Image();
-    this.playerShipR.src = './assets/playership-right.png';
-    this.playerShipL = new Image();
-    this.playerShipL.src = './assets/playership-left.png';
-  }
+            // player ship sprite
+            this.playerShip = new Image();
+            this.playerShip.src = './assets/playership.png';
+            this.playerShipR = new Image();
+            this.playerShipR.src = './assets/playership-right.png';
+            this.playerShipL = new Image();
+            this.playerShipL.src = './assets/playership-left.png';
+      }
 
-  return instance;
+      return instance;
 };
 
 exports.default = ImageableSingleton;
@@ -3318,7 +3318,7 @@ var _game = __webpack_require__(8);
 
 var _game2 = _interopRequireDefault(_game);
 
-var _player = __webpack_require__(15);
+var _player = __webpack_require__(16);
 
 var _player2 = _interopRequireDefault(_player);
 
@@ -3371,9 +3371,9 @@ var _background = __webpack_require__(9);
 
 var _background2 = _interopRequireDefault(_background);
 
-var _enemy_ships = __webpack_require__(10);
+var _ship_factory = __webpack_require__(17);
 
-var Enemies = _interopRequireWildcard(_enemy_ships);
+var _ship_factory2 = _interopRequireDefault(_ship_factory);
 
 var _util = __webpack_require__(0);
 
@@ -3387,7 +3387,7 @@ var _explosion = __webpack_require__(14);
 
 var _explosion2 = _interopRequireDefault(_explosion);
 
-var _ui = __webpack_require__(16);
+var _ui = __webpack_require__(15);
 
 var _ui2 = _interopRequireDefault(_ui);
 
@@ -3417,7 +3417,7 @@ var Game = function () {
     this.bullets = [];
     this.enemies = [];
     this.explosions = [];
-    this.spawnEnemies();
+    _ship_factory2.default.init(this);
     Util.addListeners(this);
   }
 
@@ -3425,13 +3425,7 @@ var Game = function () {
     key: 'run',
     value: function run() {
       this.render();
-    }
-  }, {
-    key: 'spawnEnemies',
-    value: function spawnEnemies() {
-      this.enemies.push(new Enemies.GruntShip({ bullets: this.bullets }));
-      this.enemies.push(new Enemies.GruntShip({ bullets: this.bullets }));
-      this.enemies.push(new Enemies.GruntShip({ bullets: this.bullets }));
+      _ship_factory2.default.spawnEnemies();
     }
   }, {
     key: 'cleanup',
@@ -3487,8 +3481,8 @@ var Game = function () {
       }
     }
   }, {
-    key: 'clearCanvas',
-    value: function clearCanvas() {
+    key: 'clearGameCanvas',
+    value: function clearGameCanvas() {
       this.canvasContext.clearRect(0, 0, Util.canvasWidth, Util.canvasHeight);
     }
   }, {
@@ -3497,10 +3491,12 @@ var Game = function () {
       // RENDER LOOP: loop through and render each ship, and then render
       // each ship's bullets
       this.bg.render(this.bgContext);
-      this.clearCanvas();
+      this.clearGameCanvas();
       if (this.showTitleScreen) {
         Util.renderTitleScreen(this.canvasContext);
-      } else if (this.showGameOverScreen) {} else {
+      } else if (this.showGameOverScreen) {
+        // TODO game over screen
+      } else {
         this.renderGame();
       }
 
@@ -3907,6 +3903,60 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _util = __webpack_require__(0);
 
+var Util = _interopRequireWildcard(_util);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UI = function () {
+  function UI(scores) {
+    _classCallCheck(this, UI);
+
+    this.scores = scores;
+    this.tick = 0;
+  }
+
+  _createClass(UI, [{
+    key: 'render',
+    value: function render(ctx) {
+      if (this.tick % 4 === 0) {
+        ctx.clearRect(0, 0, Util.canvasWidth, 100);
+        ctx.fillStyle = 'white';
+        ctx.font = '24px arcadeclassicregular';
+        ctx.fillText('SCORE: ' + Util.formatScore(this.scores.score), 40, 30);
+        ctx.fillText('HI: ' + Util.formatScore(this.scores.hiScore), 300, 30);
+
+        if (this.scores.score > this.scores.hiScore) {
+          window.localStorage.hiScore = this.scores.score;
+          this.scores.hiScore = this.scores.score;
+        }
+        this.tick > 300 && (this.tick = 0);
+      }
+      this.tick++;
+    }
+  }]);
+
+  return UI;
+}();
+
+exports.default = UI;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(0);
+
 var _bullet = __webpack_require__(3);
 
 var _moving_object = __webpack_require__(1);
@@ -4124,7 +4174,7 @@ var Player = function (_MovingObject) {
 exports.default = Player;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4134,48 +4184,30 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _enemy_ships = __webpack_require__(10);
 
-var _util = __webpack_require__(0);
-
-var Util = _interopRequireWildcard(_util);
+var Enemies = _interopRequireWildcard(_enemy_ships);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+// Suicider - small enemy ship; no bullet logic
+// GruntShip - basic enemy, fires triangle spread bullets
 
-var UI = function () {
-  function UI(scores) {
-    _classCallCheck(this, UI);
+var ShipFactory = {
+  init: function init(game) {
+    this.game = game;
+    this.scores = game.scores;
+  },
 
-    this.scores = scores;
-    this.tick = 0;
+  spawnEnemies: function spawnEnemies() {
+    var bullets = this.game.bullets;
+    this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
+    this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
+    this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
   }
+};
 
-  _createClass(UI, [{
-    key: 'render',
-    value: function render(ctx) {
-      if (this.tick % 4 === 0) {
-        ctx.clearRect(0, 0, Util.canvasWidth, 100);
-        ctx.fillStyle = 'white';
-        ctx.font = '24px arcadeclassicregular';
-        ctx.fillText('SCORE: ' + Util.formatScore(this.scores.score), 40, 30);
-        ctx.fillText('HI: ' + Util.formatScore(this.scores.hiScore), 300, 30);
-
-        if (this.scores.score > this.scores.hiScore) {
-          window.localStorage.hiScore = this.scores.score;
-          this.scores.hiScore = this.scores.score;
-        }
-        this.tick > 300 && (this.tick = 0);
-      }
-      this.tick++;
-    }
-  }]);
-
-  return UI;
-}();
-
-exports.default = UI;
+exports.default = ShipFactory;
 
 /***/ })
 /******/ ]);
