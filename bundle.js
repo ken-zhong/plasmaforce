@@ -229,6 +229,10 @@ var ImageableSingleton = function ImageableSingleton() {
             this.enemySuicider.src = './assets/enemy_suicider.png';
             this.enemyGrunt = new Image();
             this.enemyGrunt.src = './assets/enemy_grunt.png';
+            this.enemySaucer = new Image();
+            this.enemySaucer.src = './assets/enemy_saucer.png';
+            this.enemyOculus = new Image();
+            this.enemyOculus.src = './assets/enemy_oculus.png';
 
             // player ship sprite
             this.playerShip = new Image();
@@ -445,6 +449,7 @@ var BaseShip = function (_MovingObject) {
     key: 'antiBumpTechnology',
     value: function antiBumpTechnology() {
       this.speedX = -this.speedX;
+      this.speedY = -this.speedY;
     }
   }]);
 
@@ -3436,6 +3441,9 @@ var Game = function () {
       this.explosions = this.explosions.filter(function (exp) {
         return !exp.cleanup;
       });
+      if (this.enemies.length === 0) {
+        _ship_factory2.default.spawnEnemies();
+      }
     }
   }, {
     key: 'deleteBullets',
@@ -3457,7 +3465,7 @@ var Game = function () {
       this.player.playerBullets.forEach(function (bullet) {
         bullet.render(_this2.canvasContext);
         _this2.enemies.forEach(function (ship) {
-          if (Util.checkCollision(ship, bullet)) {
+          if (ship.posY + ship.hitboxH >= 0 && Util.checkCollision(ship, bullet)) {
             _this2.handleBulletHit(bullet, ship);
             _this2.scores.score += 5;
             _this2.player.deleteBullets();
@@ -3604,7 +3612,7 @@ exports.default = Background;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.GruntShip = exports.Suicider = undefined;
+exports.SaucerShip = exports.GruntShip = exports.Suicider = undefined;
 
 var _suicider = __webpack_require__(11);
 
@@ -3614,10 +3622,15 @@ var _grunt = __webpack_require__(12);
 
 var _grunt2 = _interopRequireDefault(_grunt);
 
+var _saucer = __webpack_require__(18);
+
+var _saucer2 = _interopRequireDefault(_saucer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.Suicider = _suicider2.default;
 exports.GruntShip = _grunt2.default;
+exports.SaucerShip = _saucer2.default;
 
 /***/ }),
 /* 11 */
@@ -3661,6 +3674,7 @@ var Suicider = function (_BaseShip) {
 
     _this.sprite = _this.images.enemySuicider;
     _this.tickCount = 0;
+    _this.hp = 5;
     _this.boundY = Math.floor(Math.random() * 6) * 20;
     _this.hitboxW = 16;
     _this.hitboxH = 38;
@@ -4197,19 +4211,170 @@ var ShipFactory = {
   init: function init(game) {
     this.game = game;
     this.scores = game.scores;
+    this.waves = [this.addGrunt, this.addSaucer, this.addTwoSaucers];
   },
 
   spawnEnemies: function spawnEnemies() {
-    var bullets = this.game.bullets;
-
+    if (this.scores.score < 45) {
+      this.addGrunt();
+    } else if (this.scores.score < 145) {
+      this.addGrunt();
+      this.addGrunt();
+    } else if (this.scores.score < 300) {
+      this.addGrunt();
+      this.addGrunt();
+      this.addGrunt();
+    } else if (this.scores.score < 600) {
+      this.addSaucer();
+    } else if (this.scores.score < 1100) {
+      this.addGrunt();
+      this.addSaucer();
+    } else if (this.scores.score < 1600) {
+      this.addTwoSaucers();
+    } else {
+      this.randomWave();
+    }
+    this.randomWave();
     // temp spawn to test features
-    this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
-    this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
-    this.game.enemies.push(new Enemies.GruntShip({ bullets: bullets }));
+
+    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 20}))
+    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 320, posY: -400}))
+  },
+
+  addGrunt: function addGrunt() {
+    this.game.enemies.push(new Enemies.GruntShip({ bullets: this.game.bullets }));
+  },
+  addSaucer: function addSaucer() {
+    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets }));
+  },
+  addTwoSaucers: function addTwoSaucers() {
+    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 20 }));
+    this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 320, posY: -400 }));
+  },
+  randomWave: function randomWave() {
+    this.waves[Math.floor(Math.random() * this.waves.length)].call(ShipFactory);
+    this.waves[Math.floor(Math.random() * this.waves.length)].call(ShipFactory);
   }
 };
 
 exports.default = ShipFactory;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = __webpack_require__(5);
+
+var _base2 = _interopRequireDefault(_base);
+
+var _bullet = __webpack_require__(3);
+
+var _util = __webpack_require__(0);
+
+var _sound_fx = __webpack_require__(4);
+
+var _sound_fx2 = _interopRequireDefault(_sound_fx);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// lvl1, weakest enemy ship
+var SaucerShip = function (_BaseShip) {
+  _inherits(SaucerShip, _BaseShip);
+
+  function SaucerShip(props) {
+    _classCallCheck(this, SaucerShip);
+
+    props = Object.assign({ speedY: 3, posY: -100, posX: Math.floor(_util.canvasWidth / 2 - 60) }, props);
+
+    var _this = _possibleConstructorReturn(this, (SaucerShip.__proto__ || Object.getPrototypeOf(SaucerShip)).call(this, props));
+
+    _this.hp = 45;
+    _this.sprite = _this.images.enemySaucer;
+    _this.tickCount = 0;
+    _this.hitboxW = 125;
+    _this.hitboxH = 117;
+    _this.sprites = [];
+    for (var i = 0; i <= 6; i++) {
+      _this.sprites.push([_this.sprite, i * 96, 0, 96, 90]);
+    }
+    for (var _i = 6; _i >= 0; _i--) {
+      _this.sprites.push([_this.sprite, _i * 96, 0, 96, 90]);
+    }
+    _this.BULLET_VECTORS = [[0, 5], [0, -5], [5, 0], [-5, 0], [-2, 4], [2, 4], [-2, -4], [2, -4], [4, 2], [4, -2], [-4, -2], [-4, 2]];
+    return _this;
+  }
+
+  _createClass(SaucerShip, [{
+    key: 'move',
+    value: function move() {
+      if (this.tickCount === 70) {
+        this.fireBullet();
+      }
+      if (this.posY < 0) {
+        this.posY += 2;
+      } else if (this.tickCount > 65 && this.tickCount < 100) {
+        return false;
+      } else if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= _util.canvasHeight - this.hitboxH) {
+        this.posY += this.speedY;
+      } else {
+        this.antiBumpTechnology();
+      }
+    }
+  }, {
+    key: 'fireBullet',
+    value: function fireBullet() {
+      var _this2 = this;
+
+      _sound_fx2.default.enemyBasicBullet.play();
+      var posObj = {
+        posX: this.posX + Math.floor(this.hitboxW / 2) - 10,
+        posY: this.posY + Math.floor(this.hitboxH / 2) - 10
+      };
+
+      this.BULLET_VECTORS.forEach(function (vector) {
+        var bulletData = Object.assign({ speedX: vector[0], speedY: vector[1] }, posObj);
+        _this2.bullets.push(new _bullet.BasicEnemyBullet(bulletData));
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render(ctx) {
+      this.move();
+      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.hitboxW, this.hitboxH]));
+    }
+  }, {
+    key: 'getSprite',
+    value: function getSprite() {
+      if (this.tickCount >= 140) {
+        this.tickCount = 0;
+      }
+      var result = this.sprites[Math.floor(this.tickCount / 10)];
+      this.tickCount++;
+      return result;
+    }
+  }]);
+
+  return SaucerShip;
+}(_base2.default);
+
+exports.default = SaucerShip;
 
 /***/ })
 /******/ ]);
