@@ -84,6 +84,49 @@ var checkCollision = exports.checkCollision = function checkCollision(obj1, obj2
   }
 };
 
+var renderTitleScreen = exports.renderTitleScreen = function renderTitleScreen(ctx) {
+  ctx.fillStyle = '#ff9e4f';
+  ctx.font = '48px arcadeclassicregular';
+  ctx.fillText('PlasmaForce', 80, 200);
+  ctx.fillStyle = 'white';
+  ctx.font = '30px arcadeclassicregular';
+  ctx.fillText('press enter to start', 80, 350);
+};
+
+var formatScore = exports.formatScore = function formatScore(num) {
+  if (num > 999999) {
+    return '999999';
+  } else if (num > 99999) {
+    return num;
+  } else if (num > 9999) {
+    return '0' + num;
+  } else if (num > 999) {
+    return '00' + num;
+  } else if (num > 99) {
+    return '000' + num;
+  } else if (num > 9) {
+    return '0000' + num;
+  } else {
+    return '00000' + num;
+  }
+};
+
+var addListeners = exports.addListeners = function addListeners(game) {
+  document.addEventListener('keydown', function (e) {
+    switch (e.keyCode) {
+      case 13:
+        game.showTitleScreen = false;
+        break;
+      case 80:
+        game.pause = true;
+        break;
+      default:
+        console.log(e.keyCode);
+        break;
+    }
+  });
+};
+
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -3301,6 +3344,8 @@ settings.muteBtn.addEventListener('click', function () {
   Howler.mute(settings.muted);
 });
 
+window.localStorage.hiScore = window.localStorage.hiScore || 0;
+
 document.addEventListener('DOMContentLoaded', function () {
   var player = new _player2.default();
   var game = new _game2.default(player);
@@ -3342,6 +3387,10 @@ var _explosion = __webpack_require__(14);
 
 var _explosion2 = _interopRequireDefault(_explosion);
 
+var _ui = __webpack_require__(16);
+
+var _ui2 = _interopRequireDefault(_ui);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -3354,9 +3403,13 @@ var Game = function () {
 
     this.bgCanvas = document.querySelector('#background-canvas');
     this.canvas = document.querySelector('#game-canvas');
+    this.UICanvas = document.querySelector('#ui-canvas');
     this.canvasContext = this.canvas.getContext('2d');
     this.bgContext = this.bgCanvas.getContext('2d');
+    this.UIContext = this.UICanvas.getContext('2d');
+    this.scores = { score: 0, hiScore: parseInt(window.localStorage.hiScore) };
     this.bg = new _background2.default();
+    this.ui = new _ui2.default(this.scores);
     this.player = player;
     this.showTitleScreen = true;
     this.showGameOverScreen = false;
@@ -3365,6 +3418,7 @@ var Game = function () {
     this.enemies = [];
     this.explosions = [];
     this.spawnEnemies();
+    Util.addListeners(this);
   }
 
   _createClass(Game, [{
@@ -3411,6 +3465,7 @@ var Game = function () {
         _this2.enemies.forEach(function (ship) {
           if (Util.checkCollision(ship, bullet)) {
             _this2.handleBulletHit(bullet, ship);
+            _this2.scores.score += 5;
             _this2.player.deleteBullets();
           }
         });
@@ -3439,12 +3494,23 @@ var Game = function () {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
-
       // RENDER LOOP: loop through and render each ship, and then render
       // each ship's bullets
-      this.clearCanvas();
       this.bg.render(this.bgContext);
+      this.clearCanvas();
+      if (this.showTitleScreen) {
+        Util.renderTitleScreen(this.canvasContext);
+      } else if (this.showGameOverScreen) {} else {
+        this.renderGame();
+      }
+
+      window.requestAnimationFrame(this.render.bind(this));
+    }
+  }, {
+    key: 'renderGame',
+    value: function renderGame() {
+      var _this3 = this;
+
       this.enemies.forEach(function (ship) {
         ship.render(_this3.canvasContext);
       });
@@ -3459,7 +3525,7 @@ var Game = function () {
       this.explosions.forEach(function (explosion) {
         return explosion.render(_this3.canvasContext);
       });
-      window.requestAnimationFrame(this.render.bind(this));
+      this.ui.render(this.UIContext);
     }
   }]);
 
@@ -3505,22 +3571,25 @@ var Background = function (_MovingObject) {
   function Background() {
     _classCallCheck(this, Background);
 
-    var _this = _possibleConstructorReturn(this, (Background.__proto__ || Object.getPrototypeOf(Background)).call(this, { speedY: 1 }));
+    var _this = _possibleConstructorReturn(this, (Background.__proto__ || Object.getPrototypeOf(Background)).call(this, { speedY: 2 }));
 
     var images = new _imageable2.default();
     _this.backgroundImg = images.backgroundImg;
+    _this.tick = 0;
     return _this;
   }
 
   _createClass(Background, [{
     key: 'render',
     value: function render(ctx) {
-      ctx.drawImage(this.backgroundImg, this.posX, this.posY);
-      ctx.drawImage(this.backgroundImg, this.posX, this.posY - this.backgroundImg.height);
-      this.posY += this.speedY;
-      if (this.posY >= this.backgroundImg.height) {
-        this.posY = 0;
+      if (this.tick % 2 === 0) {
+        ctx.drawImage(this.backgroundImg, this.posX, this.posY);
+        ctx.drawImage(this.backgroundImg, this.posX, this.posY - this.backgroundImg.height);
+        this.posY += this.speedY;
+        this.posY >= this.backgroundImg.height && (this.posY = 0);
+        this.tick > 300 && (this.tick = 0);
       }
+      this.tick++;
     }
   }]);
 
@@ -3689,7 +3758,7 @@ var GruntShip = function (_BaseShip) {
     key: 'move',
     value: function move() {
       if (this.posY < this.boundY) {
-        this.posY += 5;
+        this.posY += 2;
       } else {
         if (this.tickCount === 40 && Math.random() * 2 > 1) {
           this.fireBullet();
@@ -3878,14 +3947,14 @@ var Player = function (_MovingObject) {
       moveDown: false,
       fireBullet: false
     };
-    _this.bulletCooldown = 0;
     _this.bulletFx = _sound_fx2.default.playerBullet;
     _this.topSpeed = 5;
-    _this.playerBullets = [];
     _this.HP = 5;
-    _this.playerController();
+    _this.bulletCooldown = 0;
+    _this.playerBullets = [];
     _this.hitboxW = 30;
     _this.hitboxH = 46;
+    _this.playerController();
     return _this;
   }
 
@@ -4053,6 +4122,60 @@ var Player = function (_MovingObject) {
 }(_moving_object2.default);
 
 exports.default = Player;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(0);
+
+var Util = _interopRequireWildcard(_util);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UI = function () {
+  function UI(scores) {
+    _classCallCheck(this, UI);
+
+    this.scores = scores;
+    this.tick = 0;
+  }
+
+  _createClass(UI, [{
+    key: 'render',
+    value: function render(ctx) {
+      if (this.tick % 4 === 0) {
+        ctx.clearRect(0, 0, Util.canvasWidth, 100);
+        ctx.fillStyle = 'white';
+        ctx.font = '24px arcadeclassicregular';
+        ctx.fillText('SCORE: ' + Util.formatScore(this.scores.score), 40, 30);
+        ctx.fillText('HI: ' + Util.formatScore(this.scores.hiScore), 300, 30);
+
+        if (this.scores.score > this.scores.hiScore) {
+          window.localStorage.hiScore = this.scores.score;
+          this.scores.hiScore = this.scores.score;
+        }
+        this.tick > 300 && (this.tick = 0);
+      }
+      this.tick++;
+    }
+  }]);
+
+  return UI;
+}();
+
+exports.default = UI;
 
 /***/ })
 /******/ ]);
