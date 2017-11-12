@@ -3698,12 +3698,12 @@ var ShipFactory = {
       this.addSaucer();
     } else if (this.scores.score < 1000) {
       this.addTwoSaucers();
-    } else if (this.scores.score < 2000) {
+    } else if (this.scores.score < 1400) {
       this.addTwoSaucers();
       this.addGrunt();
-    } else if (this.scores.score < 2500) {
+    } else if (this.scores.score < 1900) {
       this.addOculus();
-    } else if (this.scores.score < 3500) {
+    } else if (this.scores.score < 2500) {
       this.addOculus();
       this.addGrunt();
     } else {
