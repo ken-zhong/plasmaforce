@@ -109,7 +109,10 @@ var addListeners = exports.addListeners = function addListeners(game) {
         game.showTitleScreen = false;
         break;
       case 80:
-        game.pause = true;
+        game.pauseGame();
+        break;
+      case 82:
+        game.resetGame();
         break;
       default:
         break;
@@ -3315,18 +3318,16 @@ var _game = __webpack_require__(8);
 
 var _game2 = _interopRequireDefault(_game);
 
-var _player = __webpack_require__(18);
-
-var _player2 = _interopRequireDefault(_player);
-
 var _howler = __webpack_require__(6);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* global Howler */
+
 var settings = {
   muted: true,
   muteBtn: document.querySelector('#mute-control')
-}; /* global Howler */
+};
 
 Howler.mute(settings.muted);
 var bgMusic = new _howler.Howl({
@@ -3344,8 +3345,7 @@ settings.muteBtn.addEventListener('click', function () {
 window.localStorage.hiScore = window.localStorage.hiScore || 0;
 
 document.addEventListener('DOMContentLoaded', function () {
-  var player = new _player2.default();
-  var game = new _game2.default(player);
+  var game = new _game2.default();
   window.onload = function () {
     game.run();
   };
@@ -3388,6 +3388,10 @@ var _ui = __webpack_require__(17);
 
 var _ui2 = _interopRequireDefault(_ui);
 
+var _player = __webpack_require__(18);
+
+var _player2 = _interopRequireDefault(_player);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -3406,8 +3410,8 @@ var Game = function () {
     this.UIContext = this.UICanvas.getContext('2d');
     this.scores = { score: 0, hiScore: parseInt(window.localStorage.hiScore) };
     this.bg = new _background2.default();
-    this.ui = new _ui2.default(this.scores);
-    this.player = player;
+    this.ui = new _ui2.default(this);
+    this.player = new _player2.default();
     this.showTitleScreen = true;
     this.showGameOverScreen = false;
     this.paused = false;
@@ -3422,6 +3426,23 @@ var Game = function () {
     key: 'run',
     value: function run() {
       this.render();
+      _ship_factory2.default.spawnEnemies();
+    }
+  }, {
+    key: 'pauseGame',
+    value: function pauseGame() {
+      this.pause = !this.pause;
+      console.log(this.game);
+    }
+  }, {
+    key: 'resetGame',
+    value: function resetGame() {
+      this.player = new _player2.default();
+      this.scores.score = 0;
+      this.bullets.length = 0;
+      this.enemies.length = 0;
+      this.explosions.length = 0;
+      this.showGameOverScreen = false;
       _ship_factory2.default.spawnEnemies();
     }
   }, {
@@ -3478,6 +3499,9 @@ var Game = function () {
         this.cleanup();
         _sound_fx2.default.explosion.play();
         this.explosions.push(new _explosion2.default([bullet.posX, ship.constructor.name === 'Player' ? bullet.posY : bullet.posY - 20], 64));
+        if (this.player.cleanup) {
+          this.showGameOverScreen = true;
+        }
       }
     }
   }, {
@@ -3490,16 +3514,15 @@ var Game = function () {
     value: function render() {
       // RENDER LOOP: loop through and render each ship, and then render
       // each ship's bullets
-      this.bg.render(this.bgContext);
-      this.clearGameCanvas();
-      if (this.showTitleScreen) {
-        this.renderTitleScreen(this.canvasContext);
-      } else if (this.showGameOverScreen) {
-        // TODO game over screen
-      } else {
-        this.renderGame();
+      if (!this.pause) {
+        this.bg.render(this.bgContext);
+        this.clearGameCanvas();
+        if (this.showTitleScreen) {
+          this.renderTitleScreen(this.canvasContext);
+        } else {
+          this.renderGame();
+        }
       }
-
       window.requestAnimationFrame(this.render.bind(this));
     }
   }, {
@@ -3509,18 +3532,35 @@ var Game = function () {
 
       this.enemies.forEach(function (ship) {
         ship.render(_this3.canvasContext);
+        if (Util.checkCollision(ship, _this3.player) && !_this3.player.iframe) {
+          _sound_fx2.default.explosion.play();
+          _this3.explosions.push(new _explosion2.default([_this3.player.posX + 5, _this3.player.posY - 10], 64));
+          _this3.player.iframe = 10;
+          _this3.player.hp--;
+          if (_this3.player.hp <= 0) {
+            _this3.showGameOverScreen = true;
+          }
+        }
       });
       this.bullets.forEach(function (bullet) {
         bullet.render(_this3.canvasContext);
         if (Util.checkCollision(bullet, _this3.player)) {
-          _this3.handleBulletHit(bullet, _this3.player);
+          if (!_this3.player.iframe) {
+            _this3.handleBulletHit(bullet, _this3.player);
+            // give player 30 invincible frames after each bullet hit
+            _this3.player.iframe = 30;
+          }
         }
       });
-      this.player.render(this.canvasContext);
-      this.handlePlayerAction();
-      this.explosions.forEach(function (explosion) {
-        return explosion.render(_this3.canvasContext);
-      });
+      if (this.showGameOverScreen) {
+        this.renderGameOverScreen(this.canvasContext);
+      } else {
+        this.player.render(this.canvasContext);
+        this.handlePlayerAction();
+        this.explosions.forEach(function (explosion) {
+          return explosion.render(_this3.canvasContext);
+        });
+      }
       this.ui.render(this.UIContext);
     }
   }, {
@@ -3532,6 +3572,18 @@ var Game = function () {
       ctx.fillStyle = 'white';
       ctx.font = '30px arcadeclassicregular';
       ctx.fillText('press enter to start', 70, 350);
+    }
+  }, {
+    key: 'renderGameOverScreen',
+    value: function renderGameOverScreen(ctx) {
+      if (this.player) {
+        this.player = {};
+      }
+      ctx.font = '48px arcadeclassicregular';
+      ctx.fillStyle = 'white';
+      ctx.fillText('GAME OVER', 110, 200);
+      ctx.font = '30px arcadeclassicregular';
+      ctx.fillText('press r to restart', 90, 350);
     }
   }]);
 
@@ -3637,25 +3689,21 @@ var ShipFactory = {
     } else if (this.scores.score < 145) {
       this.addGrunt();
       this.addGrunt();
-    } else if (this.scores.score < 300) {
+    } else if (this.scores.score < 290) {
       this.addGrunt();
       this.addGrunt();
       this.addGrunt();
-    } else if (this.scores.score < 600) {
+    } else if (this.scores.score < 400) {
       this.addSaucer();
-    } else if (this.scores.score < 1100) {
+    } else if (this.scores.score < 700) {
       this.addGrunt();
       this.addSaucer();
-    } else if (this.scores.score < 1600) {
+    } else if (this.scores.score < 1000) {
       this.addTwoSaucers();
     } else {
       this.randomWave();
     }
-    this.randomWave();
-    // temp spawn to test features
-
-    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 20}))
-    // this.game.enemies.push(new Enemies.SaucerShip({bullets: this.game.bullets, posX: 320, posY: -400}))
+    // this.randomWave()
   },
 
   addGrunt: function addGrunt() {
@@ -3824,7 +3872,7 @@ var GruntShip = function (_BaseShip) {
   function GruntShip(props) {
     _classCallCheck(this, GruntShip);
 
-    props = Object.assign({ speedX: 2, posY: -100, posX: Math.abs(Math.floor(Math.random() * _util.canvasWidth) - 50) }, props);
+    props = Object.assign({ speedX: 2, posY: -100, posX: Math.abs(Math.floor(Math.random() * _util.canvasWidth) - 50) + 20 }, props);
 
     var _this = _possibleConstructorReturn(this, (GruntShip.__proto__ || Object.getPrototypeOf(GruntShip)).call(this, props));
 
@@ -4115,10 +4163,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var UI = function () {
-  function UI(scores) {
+  function UI(game) {
     _classCallCheck(this, UI);
 
-    this.scores = scores;
+    this.game = game;
+    this.scores = game.scores;
     this.tick = 0;
   }
 
@@ -4126,12 +4175,17 @@ var UI = function () {
     key: 'render',
     value: function render(ctx) {
       if (this.tick % 4 === 0) {
-        ctx.clearRect(0, 0, Util.canvasWidth, 100);
+        ctx.clearRect(0, 0, Util.canvasWidth, 50);
         ctx.fillStyle = 'white';
         ctx.font = '24px arcadeclassicregular';
-        ctx.fillText('SCORE: ' + Util.formatScore(this.scores.score), 40, 30);
-        ctx.fillText('HI: ' + Util.formatScore(this.scores.hiScore), 300, 30);
+        ctx.fillText('SCORE: ' + Util.formatScore(this.scores.score), 140, 30);
+        ctx.fillText('HI: ' + Util.formatScore(this.scores.hiScore), 320, 30);
 
+        ctx.fillText('HP', 10, 30);
+        ctx.strokeStyle = 'white';
+        ctx.strokeRect(45, 14, 81, 18);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(45, 15, this.game.player.hp * 8, 16);
         if (this.scores.score > this.scores.hiScore) {
           window.localStorage.hiScore = this.scores.score;
           this.scores.hiScore = this.scores.score;
@@ -4204,11 +4258,12 @@ var Player = function (_MovingObject) {
     };
     _this.bulletFx = _sound_fx2.default.playerBullet;
     _this.topSpeed = 5;
-    _this.HP = 5;
+    _this.hp = 10;
     _this.bulletCooldown = 0;
     _this.playerBullets = [];
     _this.hitboxW = 30;
     _this.hitboxH = 46;
+    _this.iframe = 0;
     _this.playerController();
     return _this;
   }
@@ -4262,6 +4317,8 @@ var Player = function (_MovingObject) {
   }, {
     key: 'move',
     value: function move() {
+      // if iframe is 0, it's falsey!
+      this.iframe && this.iframe--;
       if (this.actions.fireBullet) {
         if (this.bulletCooldown === 0) {
           this.fireBullet();
