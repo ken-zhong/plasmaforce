@@ -3701,7 +3701,7 @@ var ShipFactory = {
     } else if (this.scores.score < 1400) {
       this.addTwoSaucers();
       this.addGrunt();
-    } else if (this.scores.score < 1900) {
+    } else if (this.scores.score < 1700) {
       this.addOculus();
     } else if (this.scores.score < 2500) {
       this.addOculus();
@@ -3709,7 +3709,6 @@ var ShipFactory = {
     } else {
       this.randomWave();
     }
-    // this.randomWave()
   },
 
   addGrunt: function addGrunt() {
@@ -4533,7 +4532,7 @@ var OculusShip = function (_BaseShip) {
           this.fireBullet();
         }
       } else {
-        if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= _util.canvasHeight - this.hitboxH) {
+        if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= 300) {
           this.posY += this.speedY;
         } else {
           this.speedY *= -1;
@@ -4554,7 +4553,6 @@ var OculusShip = function (_BaseShip) {
         posY: this.posY + Math.floor(this.hitboxH / 2) - 10
       };
       var vector = this.BULLET_VECTORS[(this.tickCount - 24) / 3];
-      console.log(vector);
       var bulletData = Object.assign({ speedX: vector[0], speedY: vector[1] }, posObj);
       this.bullets.push(new _bullet.BasicEnemyBullet(bulletData));
     }
