@@ -3532,7 +3532,7 @@ var Game = function () {
 
       this.enemies.forEach(function (ship) {
         ship.render(_this3.canvasContext);
-        if (Util.checkCollision(ship, _this3.player) && !_this3.player.iframe) {
+        if (Util.checkCollision(ship, _this3.player) && !_this3.player.iframe && !_this3.showGameOverScreen) {
           _sound_fx2.default.explosion.play();
           _this3.explosions.push(new _explosion2.default([_this3.player.posX + 5, _this3.player.posY - 10], 64));
           _this3.player.iframe = 10;
@@ -3545,7 +3545,7 @@ var Game = function () {
       this.bullets.forEach(function (bullet) {
         bullet.render(_this3.canvasContext);
         if (Util.checkCollision(bullet, _this3.player)) {
-          if (!_this3.player.iframe) {
+          if (!_this3.player.iframe && !_this3.showGameOverScreen) {
             _this3.handleBulletHit(bullet, _this3.player);
             // give player 30 invincible frames after each bullet hit
             _this3.player.iframe = 30;
@@ -3557,10 +3557,10 @@ var Game = function () {
       } else {
         this.player.render(this.canvasContext);
         this.handlePlayerAction();
-        this.explosions.forEach(function (explosion) {
-          return explosion.render(_this3.canvasContext);
-        });
       }
+      this.explosions.forEach(function (explosion) {
+        return explosion.render(_this3.canvasContext);
+      });
       this.ui.render(this.UIContext);
     }
   }, {
@@ -3576,9 +3576,7 @@ var Game = function () {
   }, {
     key: 'renderGameOverScreen',
     value: function renderGameOverScreen(ctx) {
-      if (this.player) {
-        this.player = {};
-      }
+      this.player = {};
       ctx.font = '48px arcadeclassicregular';
       ctx.fillStyle = 'white';
       ctx.fillText('GAME OVER', 110, 200);
