@@ -3870,14 +3870,14 @@ var GruntShip = function (_BaseShip) {
   function GruntShip(props) {
     _classCallCheck(this, GruntShip);
 
-    props = Object.assign({ speedX: 2, posY: -100, posX: Math.abs(Math.floor(Math.random() * _util.canvasWidth) - 50) + 20 }, props);
+    props = Object.assign({ speedX: 2, posY: -100, posX: Math.abs(Math.floor(Math.random() * _util.canvasWidth) - 50) }, props);
 
     var _this = _possibleConstructorReturn(this, (GruntShip.__proto__ || Object.getPrototypeOf(GruntShip)).call(this, props));
 
     _this.hp = 10;
     _this.sprite = _this.images.enemyGrunt;
     _this.tickCount = 0;
-    _this.boundY = Math.floor(Math.random() * 6) * 20;
+    _this.boundY = Math.floor(Math.random() * 6) * 20 + 20;
     _this.hitboxW = 48;
     _this.hitboxH = 72;
     _this.sprites = [[_this.sprite, 0, 0, 32, 48], [_this.sprite, 32, 0, 32, 48], [_this.sprite, 64, 0, 32, 48], [_this.sprite, 96, 0, 32, 48]];
