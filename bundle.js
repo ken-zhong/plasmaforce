@@ -3677,7 +3677,7 @@ var ShipFactory = {
   init: function init(game) {
     this.game = game;
     this.scores = game.scores;
-    this.waves = [this.addGrunt, this.addSaucer, this.addTwoSaucers];
+    this.waves = [this.addGrunt, this.addSaucer, this.addTwoSaucers, this.addOculus];
   },
 
   spawnEnemies: function spawnEnemies() {
@@ -3697,10 +3697,17 @@ var ShipFactory = {
       this.addSaucer();
     } else if (this.scores.score < 1000) {
       this.addTwoSaucers();
+    } else if (this.scores.score < 1400) {
+      this.addTwoSaucers();
+      this.addGrunt();
+    } else if (this.scores.score < 1700) {
+      this.addOculus();
+    } else if (this.scores.score < 2500) {
+      this.addOculus();
+      this.addGrunt();
     } else {
       this.randomWave();
     }
-    // this.randomWave()
   },
 
   addGrunt: function addGrunt() {
@@ -3712,6 +3719,9 @@ var ShipFactory = {
   addTwoSaucers: function addTwoSaucers() {
     this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 20 }));
     this.game.enemies.push(new Enemies.SaucerShip({ bullets: this.game.bullets, posX: 320, posY: -400 }));
+  },
+  addOculus: function addOculus() {
+    this.game.enemies.push(new Enemies.OculusShip({ bullets: this.game.bullets }));
   },
   randomWave: function randomWave() {
     this.waves[Math.floor(Math.random() * this.waves.length)].call(ShipFactory);
@@ -3731,7 +3741,7 @@ exports.default = ShipFactory;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SaucerShip = exports.GruntShip = exports.Suicider = undefined;
+exports.OculusShip = exports.SaucerShip = exports.GruntShip = exports.Suicider = undefined;
 
 var _suicider = __webpack_require__(12);
 
@@ -3745,11 +3755,16 @@ var _saucer = __webpack_require__(15);
 
 var _saucer2 = _interopRequireDefault(_saucer);
 
+var _oculus = __webpack_require__(19);
+
+var _oculus2 = _interopRequireDefault(_oculus);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.Suicider = _suicider2.default;
 exports.GruntShip = _grunt2.default;
 exports.SaucerShip = _saucer2.default;
+exports.OculusShip = _oculus2.default;
 
 /***/ }),
 /* 12 */
@@ -3879,7 +3894,19 @@ var GruntShip = function (_BaseShip) {
     _this.boundY = Math.floor(Math.random() * 6) * 20 + 20;
     _this.hitboxW = 48;
     _this.hitboxH = 72;
-    _this.sprites = [[_this.sprite, 0, 0, 32, 48], [_this.sprite, 32, 0, 32, 48], [_this.sprite, 64, 0, 32, 48], [_this.sprite, 96, 0, 32, 48]];
+    _this.sprites = [];
+    for (var i = 0; i <= 3; i++) {
+      _this.sprites.push([_this.sprite, i * 32, 0, 32, 48]);
+    }
+    for (var _i = 3; _i >= 0; _i--) {
+      _this.sprites.push([_this.sprite, _i * 32, 0, 32, 48]);
+    }
+    // this.sprites = [
+    //   [this.sprite, 0, 0, 32, 48],
+    //   [this.sprite, 32, 0, 32, 48],
+    //   [this.sprite, 64, 0, 32, 48],
+    //   [this.sprite, 96, 0, 32, 48]
+    // ]
     return _this;
   }
 
@@ -3889,7 +3916,7 @@ var GruntShip = function (_BaseShip) {
       if (this.posY < this.boundY) {
         this.posY += 2;
       } else {
-        if (this.tickCount === 40 && Math.random() * 2 > 1) {
+        if (this.tickCount % 40 === 0 && Math.random() * 2 > 1) {
           this.fireBullet();
           // this.deleteBullets()
         }
@@ -3922,7 +3949,7 @@ var GruntShip = function (_BaseShip) {
   }, {
     key: 'getSprite',
     value: function getSprite() {
-      if (this.tickCount >= 40) {
+      if (this.tickCount >= 80) {
         this.tickCount = 0;
       }
       var result = this.sprites[Math.floor(this.tickCount / 10)];
@@ -4430,6 +4457,125 @@ var Player = function (_MovingObject) {
 }(_moving_object2.default);
 
 exports.default = Player;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = __webpack_require__(5);
+
+var _base2 = _interopRequireDefault(_base);
+
+var _bullet = __webpack_require__(2);
+
+var _util = __webpack_require__(0);
+
+var _sound_fx = __webpack_require__(3);
+
+var _sound_fx2 = _interopRequireDefault(_sound_fx);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// lvl2, fire circular spread
+var OculusShip = function (_BaseShip) {
+  _inherits(OculusShip, _BaseShip);
+
+  function OculusShip(props) {
+    _classCallCheck(this, OculusShip);
+
+    props = Object.assign({ speedX: 3, speedY: 3, posY: -100, posX: Math.floor(Math.random() * 350) }, props);
+
+    var _this = _possibleConstructorReturn(this, (OculusShip.__proto__ || Object.getPrototypeOf(OculusShip)).call(this, props));
+
+    _this.hp = 68;
+    _this.sprite = _this.images.enemyOculus;
+    _this.tickCount = 0;
+    _this.hitboxW = 72;
+    _this.hitboxH = 120;
+    _this.sprites = [];
+    for (var i = 0; i <= 3; i++) {
+      _this.sprites.push([_this.sprite, i * 48, 0, 48, 80]);
+    }
+    for (var _i = 3; _i >= 0; _i--) {
+      _this.sprites.push([_this.sprite, _i * 48, 0, 48, 80]);
+    }
+    _this.BULLET_VECTORS = [[0, 5], [0, -5], [5, 0], [-5, 0], [-2, 4], [2, 4], [-2, -4], [2, -4], [4, 2], [4, -2], [-4, -2], [-4, 2]];
+    return _this;
+  }
+
+  _createClass(OculusShip, [{
+    key: 'move',
+    value: function move() {
+      if (this.posY < 0) {
+        this.posY += 2;
+      } else if (this.tickCount >= 24 && this.tickCount < 60) {
+        if (this.tickCount % 3 === 0) {
+          this.fireBullet();
+        }
+      } else {
+        if (this.posY + this.speedY >= 0 && this.posY + this.speedY <= 300) {
+          this.posY += this.speedY;
+        } else {
+          this.speedY *= -1;
+        }
+        if (this.posX + this.speedX >= 0 && this.posX + this.speedX <= _util.canvasWidth - this.hitboxW) {
+          this.posX += this.speedX;
+        } else {
+          this.speedX *= -1;
+        }
+      }
+    }
+  }, {
+    key: 'fireBullet',
+    value: function fireBullet() {
+      _sound_fx2.default.enemyBasicBullet.play();
+      var posObj = {
+        posX: this.posX + Math.floor(this.hitboxW / 2) - 10,
+        posY: this.posY + Math.floor(this.hitboxH / 2) - 10
+      };
+      var vector = this.BULLET_VECTORS[(this.tickCount - 24) / 3];
+      var bulletData = Object.assign({ speedX: vector[0], speedY: vector[1] }, posObj);
+      this.bullets.push(new _bullet.BasicEnemyBullet(bulletData));
+    }
+  }, {
+    key: 'render',
+    value: function render(ctx) {
+      this.move();
+      ctx.drawImage.apply(ctx, _toConsumableArray(this.getSprite()).concat([this.posX, this.posY, this.hitboxW, this.hitboxH]));
+    }
+  }, {
+    key: 'getSprite',
+    value: function getSprite() {
+      if (this.tickCount >= 80) {
+        this.tickCount = 0;
+      }
+      var result = this.sprites[Math.floor(this.tickCount / 10)];
+      this.tickCount++;
+      return result;
+    }
+  }]);
+
+  return OculusShip;
+}(_base2.default);
+
+exports.default = OculusShip;
 
 /***/ })
 /******/ ]);
