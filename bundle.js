@@ -344,7 +344,7 @@ exports.default = SoundFx;
 
 
 Object.defineProperty(exports, "__esModule", {
-      value: true
+  value: true
 });
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -354,43 +354,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var instance = null;
 
 var ImageableSingleton = function ImageableSingleton() {
-      _classCallCheck(this, ImageableSingleton);
+  _classCallCheck(this, ImageableSingleton);
 
-      if (!instance) {
-            instance = this;
+  if (!instance) {
+    instance = this;
 
-            // scrolling background
-            this.backgroundImg = new Image();
-            this.backgroundImg.src = './assets/background1.jpg';
+    // scrolling background
+    this.backgroundImg = new Image();
+    this.backgroundImg.src = './assets/background1.jpg';
 
-            // bullets and beam effects
-            this.beams = new Image();
-            this.beams.src = './assets/beams.png';
-            this.explosion = new Image();
-            this.explosion.src = './assets/explosion.png';
+    // bullets and beam effects
+    this.beams = new Image();
+    this.beams.src = './assets/beams.png';
+    this.explosion = new Image();
+    this.explosion.src = './assets/explosion.png';
 
-            // enemy ships
-            this.enemySuicider = new Image();
-            this.enemySuicider.src = './assets/enemy_suicider.png';
-            this.enemyGrunt = new Image();
-            this.enemyGrunt.src = './assets/enemy_grunt.png';
-            this.enemySaucerRed = new Image();
-            this.enemySaucerRed.src = './assets/enemy_saucer_red.png';
-            this.enemySaucerGreen = new Image();
-            this.enemySaucerGreen.src = './assets/enemy_saucer_green.png';
-            this.enemyOculus = new Image();
-            this.enemyOculus.src = './assets/enemy_oculus.png';
+    // enemy ships
+    this.enemySuicider = new Image();
+    this.enemySuicider.src = './assets/enemy_suicider.png';
+    this.enemyGrunt = new Image();
+    this.enemyGrunt.src = './assets/enemy_grunt.png';
+    this.enemySaucerRed = new Image();
+    this.enemySaucerRed.src = './assets/enemy_saucer_red.png';
+    this.enemySaucerGreen = new Image();
+    this.enemySaucerGreen.src = './assets/enemy_saucer_green.png';
+    this.enemyOculus = new Image();
+    this.enemyOculus.src = './assets/enemy_oculus.png';
 
-            // player ship sprite
-            this.playerShip = new Image();
-            this.playerShip.src = './assets/playership.png';
-            this.playerShipR = new Image();
-            this.playerShipR.src = './assets/playership-right.png';
-            this.playerShipL = new Image();
-            this.playerShipL.src = './assets/playership-left.png';
-      }
+    // player ship sprite
+    this.playerShip = new Image();
+    this.playerShip.src = './assets/playership.png';
+    this.playerShipR = new Image();
+    this.playerShipR.src = './assets/playership-right.png';
+    this.playerShipL = new Image();
+    this.playerShipL.src = './assets/playership-left.png';
+  }
 
-      return instance;
+  return instance;
 };
 
 exports.default = ImageableSingleton;
@@ -3432,7 +3432,6 @@ var Game = function () {
     key: 'pauseGame',
     value: function pauseGame() {
       this.pause = !this.pause;
-      console.log(this.game);
     }
   }, {
     key: 'resetGame',
@@ -4395,7 +4394,6 @@ var Player = function (_MovingObject) {
             _this2.actions.fireBullet = true;
             break;
           default:
-            console.log(e.keyCode);
             break;
         }
       });
